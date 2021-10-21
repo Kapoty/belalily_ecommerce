@@ -51,6 +51,18 @@ export default class MainRoute extends React.Component {
 			categories: [],
 			products: [],
 			sizes: {},
+			filter: {order: 1, sizes: []}, filterDialogOpened: false,
+			bag: {products: [
+					{
+						id: 1,
+						name: 'T-Shirt Exemplo',
+						price: 35,
+						desiredQuantity: 3,
+						availableQuantity: 4,
+						sizeId: 1,
+						img_number: 2
+					}
+				]},
 		}
 
 		this.closeCookiesDialog = this.closeCookiesDialog.bind(this);
@@ -58,6 +70,12 @@ export default class MainRoute extends React.Component {
 		this.getCategoriesList = this.getCategoriesList.bind(this);
 		this.getProductsList = this.getProductsList.bind(this);
 		this.getSizesList = this.getSizesList.bind(this);
+		this.setFilter = this.setFilter.bind(this);
+		this.openFilter = this.openFilter.bind(this);
+		this.closeFilter = this.closeFilter.bind(this);
+		this.addProductToBag = this.addProductToBag.bind(this);
+		this.removeProductFromBag = this.removeProductFromBag.bind(this);
+		this.deleteProductFromBag = this.deleteProductFromBag.bind(this);
 	}
 
 	componentDidMount() {
@@ -65,6 +83,8 @@ export default class MainRoute extends React.Component {
 		this.getProductsList();
 		this.getSizesList();
 	}
+
+	/* get data from API */
 
 	getCategoriesList() {
 		fetch(Config.apiURL + "categories", {
@@ -117,10 +137,14 @@ export default class MainRoute extends React.Component {
 		});
 	}
 
+	/* Cookies' Dialog */
+
 	closeCookiesDialog() {
 		cookies.set('cookiesDialog', '0', {maxAge: 7 * 86400});
 		this.setState({cookiesDialogOpened: false});
 	}
+
+	/* Blocked Image System */
 
 	blockedClick(e) {
 		let x = e.clientX;
@@ -143,6 +167,34 @@ export default class MainRoute extends React.Component {
 			this.setState({blockedPopup: false});
 	}
 
+	/* Filter */
+
+	setFilter(order, sizes) {
+		this.setState({filter: {order: order, sizes: [...sizes]}, filterDialogOpened: false});
+	}
+
+	openFilter() {
+		this.setState({filterDialogOpened: true});
+	}
+
+	closeFilter() {
+		this.setState({filterDialogOpened: false});
+	}
+
+	/* Bag */
+
+	addProductToBag(productId, sizeId, quantity) {
+		console.log(productId, sizeId, quantity);
+	}
+
+	removeProductFromBag() {
+
+	}
+
+	deleteProductFromBag() {
+
+	}
+
 	render() {
 		if (this.props.location.pathname == '/sacola' || this.props.location.pathname == '/')
 			this.state.lastPage = this.props.location.pathname ;
@@ -150,16 +202,17 @@ export default class MainRoute extends React.Component {
 		return <React.Fragment>
 			<ThemeProvider theme={theme}>
 				{(this.state.blockedPopup) ? <BlockedPopup blockedClick={this.blockedClick} /> : '' }
-				<CustomAppBar history={this.props.history}/>
+				<CustomAppBar history={this.props.history} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1}/>
 				<div style={{display: (this.state.lastPage!='/sacola') ? 'block' : 'none'}}>
-					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products}/>
+					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter}/>
 				</div>
 				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
-					Sacola
+					<Bag history={this.props.history} bag={this.state.bag} sizes={this.state.sizes} addProductToBag={this.addProductToBag} removeProductFromBag={this.removeProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
 				</div>
 				<BottomNav location={this.props.location} history={this.props.history} bagQnt={1}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
-				<ProductDialog sizes={this.state.sizes} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<ProductDialog sizes={this.state.sizes} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizes={this.state.sizes}/>
 				<CookiesDialog open={this.state.cookiesDialogOpened} history={this.props.history} closeCookiesDialog={this.closeCookiesDialog}/>
 			</ThemeProvider>
 		</React.Fragment>

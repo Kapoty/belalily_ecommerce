@@ -62,8 +62,8 @@ class Catalog extends React.Component {
 				</Paper>
 				{this.props.categories.map((category, i) => <div style={{display: this.state.tab == i ? 'block' : 'none'}} key={category.id}>
 					<div className={classes.products}>
-							{this.props.products.map((product) => (product.categories != null && product.categories.split(',').includes(String(category.id))) ?
-								<Product key={product.id} position={-product.position} product={product} history={this.props.history}/> : '' )}
+							{this.props.products.map((product) => ( product.categories != null && product.categories.split(',').includes(String(category.id)) && (this.props.filter.sizes.length == 0 || product.sizes.split(',').some((s) => this.props.filter.sizes.includes(s))) ) ?
+								<Product key={product.id} position={(this.props.filter.order == 1) ? -product.position : (this.props.filter.order == 2) ? product.price : -product.price} product={product} history={this.props.history}/> : '' )}
 					</div>
 				</div>)}
 			</React.Fragment>}

@@ -15,8 +15,10 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
+//import Alert from '@material-ui/Alert';
 
-import CatalogData from '../data/CatalogData';
+import Config from "../config/Config";
 
 const useStyles = (theme) => ({
 	root: {
@@ -78,39 +80,43 @@ class BagProduct extends React.Component {
 
 	render() {
 		const { classes } = this.props;
+
+		let sizesLoaded = !(Object.keys(this.props.sizes).length === 0);
+
 		return <React.Fragment>
 			<Card className={classes.root}>
 				<CardActionArea>
 					<CardMedia
 					className={classes.media}
-					image={`${CatalogData.imagePath}${this.props.item.itemId}/1-256.jpg`}
-					title={CatalogData.items[this.props.item.itemId].name}
+					image={(this.props.product.img_number > 0) ? `${Config.mediaURL}products/${this.props.product.id}/1-256.jpg` : ""}
+					title={this.props.product.name}
 					/>
 					<CardContent>
 						<Typography gutterBottom variant="h6" component="p" align="center">
-							{CatalogData.items[this.props.item.itemId].name}
+							{this.props.product.name}
 						</Typography>
 						<Typography variant="h6" color="primary" component="p" align="center">
-							R$ {CatalogData.items[this.props.item.itemId].price * this.props.item.qnt}
+							R$ {this.props.product.price * this.props.product.desiredQuantity}
 						</Typography>
 						<div className={classes.sizeSection}>
 							<div className={classes.sizeOptions}>
-								<Chip className={classes.sizeChip} label={CatalogData.sizes[CatalogData.items[this.props.item.itemId].sizes[this.props.item.size].id].name} color="primary"/>
+								{(sizesLoaded) ? <Chip className={classes.sizeChip} label={this.props.sizes[this.props.product.sizeId].name} color="primary"/> : <CircularProgress color="primary"/>}
 							</div>
 						</div>
 						<div className={classes.qntSection}>
-							<IconButton aria-label="close" onClick={() => this.props.removeItemFromBag(this.props.item.itemId, this.props.item.size)} disabled={this.props.item.qnt == 1}>
+							<IconButton aria-label="close" onClick={() => this.props.removeProductFromBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity == 1}>
 								<RemoveCircleIcon />
 							</IconButton>
 							<Typography className={classes.qntLabel} variant="h6" color="primary" component="p" align="center">
-								{this.props.item.qnt}
+								{this.props.product.desiredQuantity}
 							</Typography>
-							<IconButton aria-label="close" onClick={() => this.props.addItemToBag(this.props.item.itemId, this.props.item.size)} disabled={this.props.item.qnt == CatalogData.items[this.props.item.itemId].sizes[this.props.item.size].qnt}>
+							<IconButton aria-label="close" onClick={() => this.props.addProductToBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity >= this.props.product.availableQuantity}>
 								<AddCircleIcon />
 							</IconButton>
 						</div>
+						{/*<Alert severity="error">This is an error alert — check it out!</Alert>*/}
 						<div className={classes.removeSection}>
-							<IconButton aria-label="close" onClick={() => this.props.deleteItemFromBag(this.props.item.itemId, this.props.item.size)}>
+							<IconButton aria-label="close" onClick={() => this.props.deleteProductFromBag(this.props.product.id, this.props.product.sizeId)}>
 								<DeleteIcon />
 							</IconButton>
 						</div>

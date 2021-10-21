@@ -19,6 +19,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import TextField from '@material-ui/core/TextField';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Config from "../config/Config";
 
@@ -170,7 +171,7 @@ class ProductDialog extends React.Component {
 	}
 
 	handleAddToBag() {
-		//this.props.addToBag(this.state.itemId, this.state.size, this.state.qnt);
+		this.props.addProductToBag(this.state.productId, this.state.selectedSize, this.state.quantity);
 		this.props.history.push(this.props.lastPage);
 	}
 
@@ -276,7 +277,7 @@ class ProductDialog extends React.Component {
 						<div className={classes.sizeOptions}>
 							{(productLoaded && sizesLoaded && this.state.product.sizes != null) ? this.state.product.sizes.split(',').map((sizeId) => 
 								<Chip className={classes.sizeChip} label={this.props.sizes[sizeId].name} key={sizeId} onClick={() => this.setSize(sizeId)} color={this.state.selectedSize == sizeId ? "primary" : 'default'}/>)
-								: "..."
+								: <CircularProgress color="primary"/>
 							}
 						</div>
 					</div>

@@ -16,8 +16,7 @@ import Chip from '@material-ui/core/Chip';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-
-import CatalogData from '../data/CatalogData';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = (theme) => ({
 	root: {
@@ -56,7 +55,7 @@ class ProductDialog extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {order: this.props.filter.order, sizes: this.props.filter.sizes};
+		this.state = {order: 1, sizes: []};
 		this.handleFilter = this.handleFilter.bind(this);
 		this.handleDialogClose = this.handleDialogClose.bind(this);
 		this.handleClear = this.handleClear.bind(this);
@@ -64,8 +63,8 @@ class ProductDialog extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (prevProps.filter != this.props.filter) {
-			this.setState({order: this.props.filter.order, sizes: this.props.filter.sizes});
+		if (!prevProps.open && this.props.open) {
+			this.setState({order: this.props.filter.order, sizes: [...this.props.filter.sizes]});
 		}
 	}
 
@@ -92,6 +91,8 @@ class ProductDialog extends React.Component {
 	render() {
 		const { classes } = this.props;
 
+		let sizesLoaded = !(Object.keys(this.props.sizes).length === 0);
+
 		return <React.Fragment>
 			<Dialog open={this.props.open} onClose={this.handleDialogClose} TransitionComponent={Transition} className={classes.root}>
 				<DialogTitle id="customized-dialog-title" onClose={this.handleDialogClose}>
@@ -106,8 +107,9 @@ class ProductDialog extends React.Component {
 							Filtar por Tamanho
 						</Typography>
 						<div className={classes.sizeOptions}>
-							{Object.keys(CatalogData.sizes).map((size, i) => (
-								<Chip className={classes.sizeChip} label={CatalogData.sizes[size].name} key={size} onClick={() => this.toggleSize(size)} color={this.state.sizes.includes(size) ? "primary" : 'default'}/>))
+							{(sizesLoaded) ? Object.keys(this.props.sizes).map((sizeId) => (
+								<Chip className={classes.sizeChip} label={this.props.sizes[sizeId].name} key={sizeId} onClick={() => this.toggleSize(sizeId)} color={this.state.sizes.includes(sizeId) ? "primary" : 'default'}/>))
+								: <CircularProgress color="primary"/>
 							}
 						</div>
 					</div>
@@ -132,10 +134,10 @@ class ProductDialog extends React.Component {
 					</div>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={this.handleClear} color="primary">
+					<Button onClick={this.handleClear} color="primary" disabled={!sizesLoaded}>
 						Limpar
 					</Button>
-					<Button onClick={this.handleFilter} color="primary">
+					<Button onClick={this.handleFilter} color="primary" disabled={!sizesLoaded}>
 						Filtrar
 					</Button>
 				</DialogActions>

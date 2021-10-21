@@ -24,6 +24,7 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import WhatsappIcon from '@material-ui/icons/Whatsapp';
 import Link from '@material-ui/core/Link';
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn';
+import Badge from '@material-ui/core/Badge';
 
 const useStyles = (theme) => ({
 	logo: {
@@ -125,7 +126,9 @@ class CustomAppBar extends React.Component {
 					<img className={classes.logo} src='./assets/image/logo-texto.png' onClick={() => this.props.history.push('/')}/>
 					<div className={classes.grow} />
 					<IconButton edge="end" color="inherit" aria-label="search" onClick={this.props.openFilter}>
-						<SearchIcon />
+						<Badge color="secondary" badgeContent=" " variant="dot" overlap="circular" invisible={!this.props.filtered}>
+							<SearchIcon />
+						</Badge>
 					</IconButton>
 				</Toolbar>
 			</AppBar>
