@@ -4,6 +4,38 @@
 		"selected_items":
 		[
 			[
+				"Acc",
+				"AccountCircleIcon"
+			],
+			[
+				"prod",
+				"product"
+			],
+			[
+				"update",
+				"updateBagProductQuantity"
+			],
+			[
+				"close",
+				"closeAddToBag"
+			],
+			[
+				"produc",
+				"products"
+			],
+			[
+				"Ste",
+				"StepLabel"
+			],
+			[
+				"open",
+				"openFilter"
+			],
+			[
+				"filter",
+				"filterDialogOpened"
+			],
+			[
 				"categ",
 				"categories"
 			],
@@ -17,10 +49,6 @@
 			],
 			[
 				"pro",
-				"product"
-			],
-			[
-				"prod",
 				"product"
 			],
 			[
@@ -304,10 +332,6 @@
 				"CatalogData"
 			],
 			[
-				"filter",
-				"filteredCatalog"
-			],
-			[
 				"defau",
 				"defaultSort"
 			],
@@ -368,10 +392,6 @@
 				"material-ui"
 			],
 			[
-				"close",
-				"closeCookiesDialog"
-			],
-			[
 				"cookie",
 				"cookiesDialogOpenend"
 			],
@@ -390,10 +410,6 @@
 			[
 				"image",
 				"imageOpen"
-			],
-			[
-				"open",
-				"openImage"
 			],
 			[
 				"opt",
@@ -498,22 +514,6 @@
 			[
 				"ener",
 				"energyVariation"
-			],
-			[
-				"energ",
-				"energyVariation"
-			],
-			[
-				"hist",
-				"historyEl"
-			],
-			[
-				"uk-tex",
-				"uk-text-center"
-			],
-			[
-				"energy",
-				"energyVariation"
 			]
 		]
 	},
@@ -528,10 +528,45 @@
 			}
 		},
 		{
+			"file": "src/components/BlockedPopup.jsx",
+			"settings":
+			{
+				"buffer_size": 911,
+				"line_ending": "Windows"
+			}
+		},
+		{
 			"file": "src/routes/MainRoute.jsx",
 			"settings":
 			{
-				"buffer_size": 5031,
+				"buffer_size": 12083,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/components/ProductDialog.jsx",
+			"settings":
+			{
+				"buffer_size": 11976,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/components/BagProduct.jsx",
+			"settings":
+			{
+				"buffer_size": 4557,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/components/Bag.jsx",
+			"settings":
+			{
+				"buffer_size": 3314,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -540,7 +575,7 @@
 			"file": "src/components/Catalog.jsx",
 			"settings":
 			{
-				"buffer_size": 2042,
+				"buffer_size": 2261,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -555,19 +590,28 @@
 			}
 		},
 		{
-			"file": "src/components/ProductDialog.jsx",
+			"file": "src/components/BottomNav.jsx",
 			"settings":
 			{
-				"buffer_size": 11451,
+				"buffer_size": 1508,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "src/config/Config.js",
+			"file": "src/components/CustomAppBar.jsx",
 			"settings":
 			{
-				"buffer_size": 124,
+				"buffer_size": 5742,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/components/FilterDialog.jsx",
+			"settings":
+			{
+				"buffer_size": 4504,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -641,10 +685,24 @@
 	},
 	"file_history":
 	[
+		"/C/Users/to/Desktop/PRV/Programming/site/src/routes/MainRoute.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/webpack.config.js",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/package.json",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/BagFixedDialog.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/AboutUs.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/CookiesDialog.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/ReturnPolicy.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/TermsOfUse.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/routes/SoonRoute.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/FAQ.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/FreeShipping.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/InternalPage.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/PrivacyPolicy.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/site/src/components/Bag.jsx",
+		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/config/Config.js",
+		"/C/Users/to/Desktop/PRV/Programming/site/src/components/FilterDialog.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/site/src/components/ProductDialog.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/backend/app.js",
-		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/config/Config.js",
-		"/C/Users/to/Desktop/PRV/Programming/ecommerce/webpack.config.js",
 		"/C/Users/to/Desktop/Patins e Cia/FrontEnd/src/routes/LoginRoute.jsx",
 		"/C/Users/to/Desktop/Patins e Cia/FrontEnd/src/App.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/pagseguro_frontend/src/routes/MainRoute.jsx",
@@ -652,7 +710,6 @@
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/Product.jsx",
 		"/C/Users/to/Desktop/Patins e Cia/BackEnd/db.js",
 		"/C/Users/to/Desktop/Patins e Cia/BackEnd/api/ApiController.js",
-		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/InternalPage.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/CustomAppBar.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/routes/MainRoute.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/App.jsx",
@@ -661,7 +718,6 @@
 		"/C/Users/to/Desktop/PRV/Programming/backend/util.js",
 		"/C/Users/to/Desktop/PRV/Programming/backend/api/CatalogController.js",
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/Catalog.jsx",
-		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/routes/SoonRoute.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/BagProduct.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/ecommerce/src/components/Bag.jsx",
 		"/C/Users/to/Desktop/Patins e Cia/FrontEnd/src/config/Config.js",
@@ -670,7 +726,6 @@
 		"/C/www/provador/index.html",
 		"/C/Users/to/Desktop/PRV/boletoerro.json",
 		"/C/Users/to/Desktop/PRV/boleto gerado.json",
-		"/C/Users/to/Desktop/PRV/Programming/site/src/components/Bag.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/backend/package.json",
 		"/C/Users/to/Desktop/PRV/Programming/pagseguro_frontend/package.json",
 		"/C/Users/to/Desktop/PRV/Programming/pagseguro_frontend/webpack.config.js",
@@ -678,8 +733,6 @@
 		"/C/Users/to/Desktop/PRV/Programming/pagseguro_frontend/src/index.html",
 		"/C/Users/to/Desktop/PRV/Programming/site/src/data/CatalogData.json",
 		"/C/Users/to/Desktop/PRV/Programming/site/src/routes/SoonRoute.jsx",
-		"/C/Users/to/Desktop/PRV/Programming/site/src/routes/MainRoute.jsx",
-		"/C/Users/to/Desktop/PRV/Programming/site/src/components/FilterDialog.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/site/src/App.jsx",
 		"/C/Users/to/Desktop/PRV/Programming/backend/api/PagseguroController.js",
 		"/C/Users/to/Desktop/PRV/Programming/backend/db.js",
@@ -759,16 +812,7 @@
 		"/C/Users/to/Desktop/lolalytics/lobbyexample.json",
 		"/C/Users/to/Desktop/lolalytics/fix.js",
 		"/C/Users/to/Desktop/lolalytics/public/champions_lol.json",
-		"/C/Users/to/Desktop/lolalytics/champions_fixed.json",
-		"/C/Users/to/Desktop/comando/src.html",
-		"/C/Users/to/Desktop/lolalytics/champions.json",
-		"/C/Users/to/Desktop/TRASH/lol data analysis/CblolSplit1Matches.json",
-		"/C/Users/to/Desktop/TRASH/lol data analysis/RiotAPI.js",
-		"/C/Users/to/Desktop/TRASH/lol data analysis/CblolSplit2Matches.json",
-		"/C/Users/to/eclipse-workspace/JustLaunch/src/index.html",
-		"/C/Users/to/Desktop/comando/movies - Copia.json",
-		"/C/Users/to/Desktop/comando/movies_pages.json",
-		"/C/Users/to/Desktop/TRASH/electron-quick-start/preload.js"
+		"/C/Users/to/Desktop/lolalytics/champions_fixed.json"
 	],
 	"find":
 	{
@@ -786,6 +830,33 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"pdateBagProductInfo",
+			"getProductQuant",
+			"delete",
+			"closeAdd",
+			"add",
+			"addedToBag",
+			"quantity",
+			"qnt",
+			"getProd",
+			"quantity",
+			"availa",
+			"quantity",
+			"@material-ui/core/",
+			"@material-ui/icons/",
+			"mui/icons-material/",
+			"@material-ui/icons/",
+			"handleAddTo",
+			"qnt",
+			"Item",
+			"Catalog",
+			"sizes",
+			"...",
+			"'...'",
+			"Circular",
+			"...",
+			"sizesLoaded",
+			"CatalogData",
 			"this.state.sizes",
 			"sizes",
 			"avai",
@@ -803,6 +874,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"desiredQuantity",
+			"@mui/material/",
+			"@mui/icons-material/",
 			"productLoaded"
 		],
 		"reverse": false,
@@ -814,7 +888,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 9,
 			"sheets":
 			[
 				{
@@ -830,8 +904,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								130,
+								130
 							]
 						],
 						"settings":
@@ -844,24 +918,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "src/routes/MainRoute.jsx",
+					"file": "src/components/BlockedPopup.jsx",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5031,
+						"buffer_size": 911,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2288,
-								2288
+								87,
+								98
 							]
 						],
 						"settings":
@@ -870,27 +944,56 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 965.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/routes/MainRoute.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12083,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11109,
+								11109
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4970.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "src/components/Catalog.jsx",
+					"buffer": 3,
+					"file": "src/components/ProductDialog.jsx",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2042,
+						"buffer_size": 11976,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1350,
-								1350
+								4270,
+								4270
 							]
 						],
 						"settings":
@@ -899,14 +1002,102 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 485.0,
+						"translation.y": 1805.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/components/BagProduct.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4557,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3568,
+								3568
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 335.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
+					"file": "src/components/Bag.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3314,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2557,
+								2557
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1204.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/components/Catalog.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2261,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								75,
+								75
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "src/components/Product.jsx",
 					"semi_transient": false,
 					"settings":
@@ -918,37 +1109,8 @@
 						"selection":
 						[
 							[
-								1272,
-								1335
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 43.0,
-						"translation.y": 440.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "src/components/ProductDialog.jsx",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 11451,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3815,
-								3815
+								75,
+								75
 							]
 						],
 						"settings":
@@ -957,38 +1119,97 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1890.0,
+						"translation.y": 425.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/components/BottomNav.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1508,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								65,
+								65
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 405.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/components/CustomAppBar.jsx",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5742,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5401,
+								5401
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 34.0,
+						"translation.y": 1685.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "src/config/Config.js",
+					"buffer": 10,
+					"file": "src/components/FilterDialog.jsx",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 124,
+						"buffer_size": 4504,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								93,
-								93
+								934,
+								934
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 210.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]

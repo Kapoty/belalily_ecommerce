@@ -16,7 +16,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-//import Alert from '@material-ui/Alert';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 import Config from "../config/Config";
 
@@ -32,6 +32,7 @@ const useStyles = (theme) => ({
 		display: 'flex',
 		flexDirecton: 'row',
 		flexWrap: 'wrap',
+		alignItems: 'baseline',
 	},
 	media: {
 		[theme.breakpoints.down('sm')]: {
@@ -104,17 +105,25 @@ class BagProduct extends React.Component {
 							</div>
 						</div>
 						<div className={classes.qntSection}>
-							<IconButton aria-label="close" onClick={() => this.props.removeProductFromBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity == 1}>
+							<IconButton aria-label="close" onClick={() => this.props.decreaseProductFromBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity == 1}>
 								<RemoveCircleIcon />
 							</IconButton>
 							<Typography className={classes.qntLabel} variant="h6" color="primary" component="p" align="center">
 								{this.props.product.desiredQuantity}
 							</Typography>
-							<IconButton aria-label="close" onClick={() => this.props.addProductToBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity >= this.props.product.availableQuantity}>
+							<IconButton aria-label="close" onClick={() => this.props.increaseProductFromBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity >= this.props.product.availableQuantity}>
 								<AddCircleIcon />
 							</IconButton>
 						</div>
-						{/*<Alert severity="error">This is an error alert — check it out!</Alert>*/}
+						{	(this.props.product.availableQuantity == 0) ?
+							<Alert severity="error">
+								<AlertTitle>Produto indisponível</AlertTitle>
+							</Alert> : (this.props.product.desiredQuantity > this.props.product.availableQuantity) ?
+							<Alert severity="error">
+								<AlertTitle>Limite excedido</AlertTitle>
+								Quantidade disponível: {this.props.product.availableQuantity}
+							</Alert> : ''
+						}
 						<div className={classes.removeSection}>
 							<IconButton aria-label="close" onClick={() => this.props.deleteProductFromBag(this.props.product.id, this.props.product.sizeId)}>
 								<DeleteIcon />

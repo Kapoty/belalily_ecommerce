@@ -91,8 +91,8 @@ class Bag extends React.Component {
 							<div className={classes.cards}>
 								{this.props.bag.products.map((product) => 
 									<BagProduct key={product.id+'-'+product.sizeId} product={product} sizes={this.props.sizes}
-									addProductToBag={this.props.addProductToBag}
-									removeProductFromBag={this.props.removeProductFromBag}
+									increaseProductFromBag={this.props.increaseProductFromBag}
+									decreaseProductFromBag={this.props.decreaseProductFromBag}
 									deleteProductFromBag={this.props.deleteProductFromBag}/>)}
 							</div>
 							<div className={classes.actionsContainer}>

@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search'
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
@@ -129,6 +130,9 @@ class CustomAppBar extends React.Component {
 						<Badge color="secondary" badgeContent=" " variant="dot" overlap="circular" invisible={!this.props.filtered}>
 							<SearchIcon />
 						</Badge>
+					</IconButton>
+					<IconButton edge="end" color="inherit" aria-label="account" style={{marginLeft: '20px'}}>
+						<AccountCircleIcon />
 					</IconButton>
 				</Toolbar>
 			</AppBar>

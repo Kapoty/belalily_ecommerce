@@ -91,19 +91,19 @@ const useStyles = (theme) => ({
 	priceSection: {
 		margin: theme.spacing(3, 2),
 	},
-	qntSection: {
+	desiredQuantitySection: {
 		display: 'flex',
 		justifyContent: 'center',
 		margin: theme.spacing(3, 2),
 		alignItems: 'center',
 	},
-	qntLabel: {
+	desiredQuantityLabel: {
 		margin: theme.spacing(0, 1),
 	},
 	descSection: {
 		margin: theme.spacing(3, 2),
 	},
-	quantitySection: {
+	availableQuantitySection: {
 		margin: theme.spacing(3, 2),
 	}
 });
@@ -117,7 +117,7 @@ class ProductDialog extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {dialogOpen: false, imageOpen: false, image: '', productId: -1, product: {},
-			qnt: 0, selectedSize: 0, quantity: -1};
+			desiredQuantity: 0, selectedSize: 0, availableQuantity: -1};
 		this.pageReg = /\/p\/[\d]+/;
 		this.contentRef = React.createRef();
 		this.descSectionRef = React.createRef();
@@ -146,6 +146,7 @@ class ProductDialog extends React.Component {
 			})
 		})
 		.catch((e) => {
+			setTimeout(this.getProduct, 5000);
 			console.log(e);
 		});
 	}
@@ -158,10 +159,11 @@ class ProductDialog extends React.Component {
 			if (resp.status != 200)
 				setTimeout(this.getProductQuantity, 5000);
 			else resp.json().then((data) => {
-				this.setState({quantity: data.quantity, qnt: (data.quantity>0) ? 1 : 0});
+				this.setState({availableQuantity: data.quantity, desiredQuantity: (data.quantity>0) ? 1 : 0});
 			})
 		})
 		.catch((e) => {
+			setTimeout(this.getProductQuantity, 5000);
 			console.log(e);
 		});
 	}
@@ -171,7 +173,7 @@ class ProductDialog extends React.Component {
 	}
 
 	handleAddToBag() {
-		this.props.addProductToBag(this.state.productId, this.state.selectedSize, this.state.quantity);
+		this.props.addProductToBag(this.state.product, this.state.selectedSize, this.state.desiredQuantity, this.state.availableQuantity);
 		this.props.history.push(this.props.lastPage);
 	}
 
@@ -188,19 +190,19 @@ class ProductDialog extends React.Component {
 	}
 
 	setSize(sizeId) {
-		if (this.state.quantity != -1 || this.state.selectedSize == 0) {
+		if (this.state.availableQuantity != -1 || this.state.selectedSize == 0) {
 			this.state.selectedSize = sizeId;
-			this.setState({quantity: -1, qnt: 0});
+			this.setState({availableQuantity: -1, desiredQuantity: 0});
 			this.getProductQuantity();
 		}
 	}
 
 	addQnt() {
-		this.setState({qnt: this.state.qnt+1});
+		this.setState({desiredQuantity: this.state.desiredQuantity+1});
 	}
 
 	removeQnt() {
-		this.setState({qnt: this.state.qnt-1});
+		this.setState({desiredQuantity: this.state.desiredQuantity-1});
 	}
 
 	render() {
@@ -209,7 +211,7 @@ class ProductDialog extends React.Component {
 		if (this.pageReg.test(this.props.location.pathname)) {
 			if (this.state.dialogOpen == false) {
 				this.state.product = {};
-				this.state.quantity = -1;
+				this.state.availableQuantity = -1;
 				this.state.selectedSize = 0;
 				this.state.productId = this.props.location.pathname.match(/(?<=\/p\/)[\d]+/)[0];
 				this.getProduct();
@@ -281,21 +283,21 @@ class ProductDialog extends React.Component {
 							}
 						</div>
 					</div>
-					<div className={classes.qntSection}>
-						<IconButton aria-label="close" onClick={this.removeQnt} disabled={!productLoaded || this.state.qnt <= 1}>
+					<div className={classes.desiredQuantitySection}>
+						<IconButton aria-label="close" onClick={this.removeQnt} disabled={!productLoaded || this.state.desiredQuantity <= 1}>
 							<RemoveCircleIcon />
 						</IconButton>
-						<Typography className={classes.qntLabel} variant="h6" color="primary" component="p" align="center">
-							{this.state.qnt}
+						<Typography className={classes.desiredQuantityLabel} variant="h6" color="primary" component="p" align="center">
+							{this.state.desiredQuantity}
 						</Typography>
-						<IconButton aria-label="close" onClick={this.addQnt} disabled={!productLoaded || this.state.selectedSize == 0 || this.state.quantity == -1 || this.state.qnt >= this.state.quantity}>
+						<IconButton aria-label="close" onClick={this.addQnt} disabled={!productLoaded || this.state.selectedSize == 0 || this.state.availableQuantity == -1 || this.state.desiredQuantity >= this.state.availableQuantity}>
 							<AddCircleIcon />
 						</IconButton>
 					</div>
-					{(this.state.quantity != -1) ?
-					<div className={classes.quantitySection}>
+					{(this.state.availableQuantity != -1) ?
+					<div className={classes.availableQuantitySection}>
 						<Typography variant="body2" color="primary" component="p" align="center">
-						{this.state.quantity} {(this.state.quantity <= 1) ? 'unidade disponível' : 'unidades disponíveis'}
+						{this.state.availableQuantity} {(this.state.availableQuantity <= 1) ? 'unidade disponível' : 'unidades disponíveis'}
 						</Typography>
 					</div> : ''}
 					<Divider variant='middle'/>
@@ -309,7 +311,7 @@ class ProductDialog extends React.Component {
 					<Button onClick={this.handleKnowMore}>
 						Saiba Mais
 					</Button>
-					<Button onClick={this.handleAddToBag} color="primary" disabled={!productLoaded || this.state.qnt == 0}>
+					<Button onClick={this.handleAddToBag} color="primary" disabled={!productLoaded || this.state.desiredQuantity == 0}>
 						Adicionar à sacola
 					</Button>
 				</DialogActions>
