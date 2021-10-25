@@ -34,7 +34,7 @@ class BottomNav extends React.Component {
 	render() {
 		const { classes } = this.props;
 		return <React.Fragment>
-			<BottomNavigation value={this.props.location.pathname == "/sacola" ? 1 : 0} onChange={(event, newValue) => {
+			<BottomNavigation value={this.props.lastPage == "/sacola" ? 1 : 0} onChange={(event, newValue) => {
 			switch(newValue) {
 				case 0:
 					this.props.history.push('/');
@@ -45,7 +45,7 @@ class BottomNav extends React.Component {
 				}
 			}} showLabels className={classes.root}>
 			<BottomNavigationAction label="Catálogo" icon={<PhotoAlbumIcon />} />
-			<BottomNavigationAction label="Sacola" icon={<StyledBadge badgeContent={this.props.bagQnt} color="secondary">
+			<BottomNavigationAction label="Sacola" icon={<StyledBadge badgeContent={this.props.bagQnt} color="primary">
 														<LocalMallIcon />
 														</StyledBadge>}
 														/>

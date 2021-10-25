@@ -40,7 +40,7 @@ class InternalPage extends React.Component {
 					{pathname: 'politica-de-privacidade', name: 'Política de Privacidade', component: PrivacyPolicy}];
 		let exp = '';
 		this.pages.forEach((p, i) => exp += `${(i!=0)?'|':''}(${p.pathname})`);
-		this.pageReg = new RegExp('\/('+exp+')', '');
+		this.pageReg = new RegExp('\^/('+exp+')', '');
 		this.state = {dialogOpen: false, currentPage: 0};
 		this.handleDialogClose = this.handleDialogClose.bind(this);
 		this.getCurrentPage = this.getCurrentPage.bind(this);

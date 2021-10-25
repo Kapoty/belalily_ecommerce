@@ -20,6 +20,7 @@ import FilterDialog from '../components/FilterDialog';
 import CookiesDialog from '../components/CookiesDialog';
 import BlockedPopup from '../components/BlockedPopup';
 import BagFixedDialog from '../components/BagFixedDialog';
+import LoginDialog from '../components/LoginDialog';
 
 import * as ls from 'local-storage';
 
@@ -52,27 +53,9 @@ export default class MainRoute extends React.Component {
 			products: [],
 			sizes: {},
 			filter: {order: 1, sizes: []}, filterDialogOpened: false,
-			bag: {products: [
-					{
-						id: 1,
-						name: 'T-Shirt Exemplos',
-						price: 45,
-						desiredQuantity: 3,
-						availableQuantity: 0,
-						sizeId: 2,
-						img_number: 0
-					},
-					{
-						id: 1,
-						name: 'T-Shirt Exemplo',
-						price: 35,
-						desiredQuantity: 3,
-						availableQuantity: 2,
-						sizeId: 3,
-						img_number: 2
-					}
-				]},
-			addedToBag: false, addedToBagInfo: {name: '', quantity: ''}, 
+			bag: {products: []},
+			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
+			customerToken: null, auth: false, customerBasicInfo: {}, 
 		}
 
 		this.closeCookiesDialog = this.closeCookiesDialog.bind(this);
@@ -93,6 +76,9 @@ export default class MainRoute extends React.Component {
 		this.updateBagProductQuantity = this.updateBagProductQuantity.bind(this);
 		this.loadBagProductsFromStorage = this.loadBagProductsFromStorage.bind(this);
 		this.saveBagProductsToStorage = this.saveBagProductsToStorage.bind(this);
+		this.getCustomerBasicInfo = this.getCustomerBasicInfo.bind(this);
+		this.customerLogout = this.customerLogout.bind(this);
+		this.customerLogin = this.customerLogin.bind(this);
 	}
 
 	componentDidMount() {
@@ -100,6 +86,7 @@ export default class MainRoute extends React.Component {
 		this.getProductsList();
 		this.getSizesList();
 		this.loadBagProductsFromStorage();
+		this.getCustomerBasicInfo();
 	}
 
 	/* get data from API */
@@ -158,6 +145,47 @@ export default class MainRoute extends React.Component {
 		});
 	}
 
+	/* Authentication */
+
+	getCustomerBasicInfo() {
+		this.state.customerToken = cookies.get('customer-token');
+		if (this.state.customerToken == null) {
+			this.setState({auth: false});
+			return;
+		}
+		fetch(Config.apiURL + "customers/basic-info", {
+			method: "GET",
+			headers: { 
+				"Content-type": "application/json; charset=UTF-8",
+				"x-customer-token": this.state.customerToken,
+			} 
+		})
+		.then((resp) => {
+			resp.json().then((data) => {
+				if ('auth' in data) {
+					cookies.remove('customer-token');
+					this.setState({auth: false, customerBasicInfo: {}});
+				}
+				else
+					this.setState({auth: true, customerBasicInfo: data.customer});
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getCustomerBasicInfo, 5000);
+			console.log(e);
+		});
+	}
+
+	customerLogout() {
+		cookies.remove('customer-token');
+		this.setState({auth: false});
+	}
+
+	customerLogin(customerToken) {
+		cookies.set('customer-token', customerToken);
+		this.getCustomerBasicInfo();
+	}
+
 	/* Cookies' Dialog */
 
 	closeCookiesDialog() {
@@ -207,12 +235,12 @@ export default class MainRoute extends React.Component {
 	addProductToBag(product, sizeId, desiredQuantity, availableQuantity) {
 		let bagProduct = {
 			id: product.id,
-				name: product.name,
-				price: product.price,
-				desiredQuantity: desiredQuantity,
-				availableQuantity: availableQuantity,
-				sizeId: sizeId,
-				img_number: product.img_number
+			name: product.name,
+			price: product.price,
+			desiredQuantity: desiredQuantity,
+			availableQuantity: availableQuantity,
+			sizeId: sizeId,
+			img_number: product.img_number
 		};
 		let number_of_products = this.state.bag.products.length;
 		let i;
@@ -339,15 +367,16 @@ export default class MainRoute extends React.Component {
 		return <React.Fragment>
 			<ThemeProvider theme={theme}>
 				{(this.state.blockedPopup) ? <BlockedPopup blockedClick={this.blockedClick} /> : '' }
-				<CustomAppBar history={this.props.history} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1}/>
+				<CustomAppBar history={this.props.history} auth={this.state.auth} customerBasicInfo={this.state.customerBasicInfo} customerLogout={this.customerLogout}/>
 				<div style={{display: (this.state.lastPage!='/sacola') ? 'block' : 'none'}}>
-					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter}/>
+					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1} />
 				</div>
 				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
 					<Bag history={this.props.history} bag={this.state.bag} sizes={this.state.sizes} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
 				</div>
-				<BottomNav location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
+				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<ProductDialog sizes={this.state.sizes} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizes={this.state.sizes}/>
 				<Snackbar

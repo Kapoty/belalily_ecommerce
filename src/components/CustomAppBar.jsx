@@ -6,7 +6,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import Drawer from '@material-ui/core/Drawer';
@@ -25,7 +24,8 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import WhatsappIcon from '@material-ui/icons/Whatsapp';
 import Link from '@material-ui/core/Link';
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn';
-import Badge from '@material-ui/core/Badge';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = (theme) => ({
 	logo: {
@@ -48,10 +48,13 @@ class CustomAppBar extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {menuAnchor: null};
+		this.state = {menuAnchor: null, customerMenuAnchor: null};
 		this.handleMenuOpen = this.handleMenuOpen.bind(this);
 		this.handleMenuClose = this.handleMenuClose.bind(this);
 		this.handleMenuClick = this.handleMenuClick.bind(this);
+		this.handleCustomerMenuOpen = this.handleCustomerMenuOpen.bind(this);
+		this.handleCustomerMenuClose = this.handleCustomerMenuClose.bind(this);
+		this.handleCustomerLogout = this.handleCustomerLogout.bind(this);
 	}
 
 	handleMenuOpen = (event) => {
@@ -71,6 +74,19 @@ class CustomAppBar extends React.Component {
 		const url = `https://api.whatsapp.com/send?phone=05562983118355&text=Olá, tudo bem?`;
 		var encoded = encodeURI(url);
 		window.open(encoded, '_blank');
+	}
+
+	handleCustomerMenuOpen = (event) => {
+		this.setState({customerMenuAnchor: event.currentTarget});
+	};
+
+	handleCustomerMenuClose = (event) => {
+		this.setState({customerMenuAnchor: null});
+	};
+
+	handleCustomerLogout() {
+		this.setState({customerMenuAnchor: null});
+		this.props.customerLogout();
 	}
 
 	render() {
@@ -126,14 +142,31 @@ class CustomAppBar extends React.Component {
 					</Drawer>
 					<img className={classes.logo} src='./assets/image/logo-texto.png' onClick={() => this.props.history.push('/')}/>
 					<div className={classes.grow} />
-					<IconButton edge="end" color="inherit" aria-label="search" onClick={this.props.openFilter}>
-						<Badge color="secondary" badgeContent=" " variant="dot" overlap="circular" invisible={!this.props.filtered}>
-							<SearchIcon />
-						</Badge>
-					</IconButton>
-					<IconButton edge="end" color="inherit" aria-label="account" style={{marginLeft: '20px'}}>
-						<AccountCircleIcon />
-					</IconButton>
+					{(this.props.auth) ? <React.Fragment>
+							<IconButton edge="end" color="inherit" aria-label="account" style={{marginLeft: '20px'}} onClick={this.handleCustomerMenuOpen}>
+								<AccountCircleIcon />
+							</IconButton>
+							<Menu
+								id="menu-appbar"
+								anchorEl={this.state.customerMenuAnchor}
+								anchorOrigin={{
+									vertical: 'top',
+									horizontal: 'right',
+								}}
+								keepMounted
+								transformOrigin={{
+									vertical: 'top',
+									horizontal: 'right',
+								}}
+								open={Boolean(this.state.customerMenuAnchor)}
+								onClose={this.handleCustomerMenuClose}
+							>
+								<MenuItem onClick={this.handleCustomerMenuClose}>Perfil</MenuItem>
+								<MenuItem onClick={this.handleCustomerMenuClose}>Pedidos</MenuItem>
+								<MenuItem onClick={this.handleCustomerLogout}>Sair</MenuItem>
+							</Menu>
+						</React.Fragment>
+						: <Button color="inherit" style={{marginLeft: '20px'}} onClick={() => this.props.history.push('/login')}>Entrar</Button>}
 				</Toolbar>
 			</AppBar>
 			<Toolbar><img className={classes.logoImg} src='./assets/image/logo-small.png'/></Toolbar>

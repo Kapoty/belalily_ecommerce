@@ -139,9 +139,11 @@ class ProductDialog extends React.Component {
 			method: "GET"
 		})
 		.then((resp) => {
-			if (resp.status != 200)
-				setTimeout(this.getProduct, 5000);
-			else resp.json().then((data) => {
+			resp.json().then((data) => {
+				if (resp.status == 500 && data.error == 'no product matches given id')
+					return this.props.history.push("/");
+				if (resp.status != 200)
+					setTimeout(this.getProduct, 5000);
 				this.setState({product: data.product});
 			})
 		})

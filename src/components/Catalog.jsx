@@ -1,20 +1,21 @@
 import React from "react";
 
 import {withStyles, useTheme} from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search'
+import Badge from '@material-ui/core/Badge';
 
 import Product from './Product'
 
 const useStyles = (theme) => ({
-	root: {
+	paper: {
 		display: 'flex',
-		flexWrap: 'wrap',
-		justifyContent: 'space-around',
-		overflow: 'hidden',
+		justifyContent: 'center',
+		marginTop: theme.spacing(1),
 	},
 	products: {
 		display: 'flex',
@@ -47,7 +48,7 @@ class Catalog extends React.Component {
 		return <React.Fragment>
 			{(this.props.categories.length == 0) ? <div className={classes.progressArea}><CircularProgress color="primary"/></div> :
 			<React.Fragment>
-				<Paper square>
+				<div className={classes.paper}>
 					 
 					<Tabs
 					value={this.state.tab}
@@ -59,7 +60,13 @@ class Catalog extends React.Component {
 					>
 						{this.props.categories.map((category) => <Tab label={category.name} key={category.id}/>)}
 					</Tabs>
-				</Paper>
+
+					<IconButton edge="end" color="inherit" aria-label="search" onClick={this.props.openFilter}>
+						<Badge color="primary" badgeContent=" " variant="dot" overlap="circular" invisible={!this.props.filtered}>
+							<SearchIcon />
+						</Badge>
+					</IconButton>
+				</div>
 				{this.props.categories.map((category, i) => <div style={{display: this.state.tab == i ? 'block' : 'none'}} key={category.id}>
 					<div className={classes.products}>
 							{this.props.products.map((product) => ( product.categories != null && product.categories.split(',').includes(String(category.id)) && (this.props.filter.sizes.length == 0 || product.sizes.split(',').some((s) => this.props.filter.sizes.includes(s))) ) ?
