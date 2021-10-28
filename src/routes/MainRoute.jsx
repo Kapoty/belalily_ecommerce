@@ -24,6 +24,8 @@ import LoginDialog from '../components/LoginDialog';
 
 import * as ls from 'local-storage';
 
+import queryString from 'query-string';
+
 const theme = createTheme({
 	palette: {
 		/*primary: pink,
@@ -52,10 +54,14 @@ export default class MainRoute extends React.Component {
 			categories: [],
 			products: [],
 			sizes: {},
+			cities: {},
+			districts: [],
+			secretQuestions: [],
 			filter: {order: 1, sizes: []}, filterDialogOpened: false,
 			bag: {products: []},
 			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
 			customerToken: null, auth: false, customerBasicInfo: {}, 
+			consultant_code: '',
 		}
 
 		this.closeCookiesDialog = this.closeCookiesDialog.bind(this);
@@ -63,6 +69,9 @@ export default class MainRoute extends React.Component {
 		this.getCategoriesList = this.getCategoriesList.bind(this);
 		this.getProductsList = this.getProductsList.bind(this);
 		this.getSizesList = this.getSizesList.bind(this);
+		this.getCitiesList = this.getCitiesList.bind(this);
+		this.getDistrictsList = this.getDistrictsList.bind(this);
+		this.getSecretQuestionsList = this.getSecretQuestionsList.bind(this);
 		this.setFilter = this.setFilter.bind(this);
 		this.openFilter = this.openFilter.bind(this);
 		this.closeFilter = this.closeFilter.bind(this);
@@ -79,14 +88,19 @@ export default class MainRoute extends React.Component {
 		this.getCustomerBasicInfo = this.getCustomerBasicInfo.bind(this);
 		this.customerLogout = this.customerLogout.bind(this);
 		this.customerLogin = this.customerLogin.bind(this);
+		this.loadConsultantCode = this.loadConsultantCode.bind(this);
 	}
 
 	componentDidMount() {
 		this.getCategoriesList();
 		this.getProductsList();
 		this.getSizesList();
+		this.getCitiesList();
+		this.getDistrictsList();
+		this.getSecretQuestionsList();
 		this.loadBagProductsFromStorage();
 		this.getCustomerBasicInfo();
+		this.loadConsultantCode();
 	}
 
 	/* get data from API */
@@ -145,6 +159,59 @@ export default class MainRoute extends React.Component {
 		});
 	}
 
+	getCitiesList() {
+		fetch(Config.apiURL + "cities", {
+			method: "GET"
+		})
+		.then((resp) => {
+			if (resp.status != 200)
+				setTimeout(this.getCitiesList, 5000);
+			else resp.json().then((data) => {
+				let cities = {}
+				data.cities.forEach((city) => cities[city.id] = {name: city.name, uf: city.uf})
+				this.setState({cities: cities});
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getCitiesList, 5000);
+			console.log(e);
+		});
+	}
+
+	getDistrictsList() {
+		fetch(Config.apiURL + "districts", {
+			method: "GET"
+		})
+		.then((resp) => {
+			if (resp.status != 200)
+				setTimeout(this.getDistrictsList, 5000);
+			else resp.json().then((data) => {
+				this.setState({districts: data.districts});
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getDistrictsList, 5000);
+			console.log(e);
+		});
+	}
+
+	getSecretQuestionsList() {
+		fetch(Config.apiURL + "secret-questions", {
+			method: "GET"
+		})
+		.then((resp) => {
+			if (resp.status != 200)
+				setTimeout(this.getSecretQuestionsList, 5000);
+			else resp.json().then((data) => {
+				this.setState({secretQuestions: data.secret_questions});
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getSecretQuestionsList, 5000);
+			console.log(e);
+		});
+	}
+
 	/* Authentication */
 
 	getCustomerBasicInfo() {
@@ -162,7 +229,7 @@ export default class MainRoute extends React.Component {
 		})
 		.then((resp) => {
 			resp.json().then((data) => {
-				if ('auth' in data) {
+				if ('auth' in data || 'error' in data) {
 					cookies.remove('customer-token');
 					this.setState({auth: false, customerBasicInfo: {}});
 				}
@@ -360,6 +427,17 @@ export default class MainRoute extends React.Component {
 		this.setState({addedToBag: false});
 	}
 
+	/* Consultant */
+
+	loadConsultantCode() {
+		let query = queryString.parse(this.props.location.search)
+		if ('codigo' in query)
+			cookies.set('consultant_code', query.codigo, {maxAge: 1 * 86400});
+		let consultant_code = cookies.get('consultant_code');
+		if (consultant_code !== undefined)
+			this.setState({consultant_code: consultant_code});
+	}
+
 	render() {
 		if (this.props.location.pathname == '/sacola' || this.props.location.pathname == '/')
 			this.state.lastPage = this.props.location.pathname ;
@@ -376,7 +454,7 @@ export default class MainRoute extends React.Component {
 				</div>
 				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
-				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} cities={this.state.cities} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
 				<ProductDialog sizes={this.state.sizes} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizes={this.state.sizes}/>
 				<Snackbar

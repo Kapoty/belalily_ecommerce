@@ -118,7 +118,7 @@ class ProductDialog extends React.Component {
 		super(props);
 		this.state = {dialogOpen: false, imageOpen: false, image: '', productId: -1, product: {},
 			desiredQuantity: 0, selectedSize: 0, availableQuantity: -1};
-		this.pageReg = /\/p\/[\d]+/;
+		this.pageReg = /^\/p\/[\d]+/;
 		this.contentRef = React.createRef();
 		this.descSectionRef = React.createRef();
 

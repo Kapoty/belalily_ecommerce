@@ -18,15 +18,6 @@ const useStyles = (theme) => ({
 		justifyContent: 'center',
 		margin: theme.spacing(2,0),
 	},
-	mapImg: {
-		overflow: 'hidden',
-		height: '90vh',
-		maxHeight: '90vw',
-		width: '90vh',
-		maxWidth: '90vw',
-		backgroundImage: 'url(./assets/image/freeshipping/map1.png)',
-		backgroundSize: 'cover',
-	},
 	heading: {
 		fontSize: theme.typography.pxToRem(15),
 		fontWeight: theme.typography.fontWeightRegular
@@ -64,7 +55,6 @@ class FreeShipping extends React.Component {
 	}
 
 	render() {
-		//<div className={classes.map}><span className={classes.mapImg}></span></div>
 		const { classes } = this.props;
 		return <React.Fragment>
 			<Typography variant="h4" align='center' gutterBottom>
@@ -81,7 +71,7 @@ class FreeShipping extends React.Component {
 				Área de cobertura
 			</Typography>
 			<Paper className={classes.placesPaper}>
-			<div className={classes.map}><img style={{width: '100%', maxWidth: '1024px'}}src='./assets/image/freeshipping/map1.png'/></div>
+			<div className={classes.map}><img style={{width: '100%', maxWidth: '1024px'}} src='./assets/image/internal-pages/free-shipping/map1.png'/></div>
 			
 				<List dense className={classes.placesList}>
 					{places.map((p, i) => {
