@@ -21,6 +21,7 @@ import CookiesDialog from '../components/CookiesDialog';
 import BlockedPopup from '../components/BlockedPopup';
 import BagFixedDialog from '../components/BagFixedDialog';
 import LoginDialog from '../components/LoginDialog';
+import ProfileDialog from '../components/ProfileDialog';
 
 import * as ls from 'local-storage';
 
@@ -60,7 +61,7 @@ export default class MainRoute extends React.Component {
 			filter: {order: 1, sizes: []}, filterDialogOpened: false,
 			bag: {products: []},
 			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
-			customerToken: null, auth: false, customerBasicInfo: {}, 
+			customerToken: null, auth: false, customerInfo: {}, 
 			consultant_code: '',
 		}
 
@@ -85,7 +86,7 @@ export default class MainRoute extends React.Component {
 		this.updateBagProductQuantity = this.updateBagProductQuantity.bind(this);
 		this.loadBagProductsFromStorage = this.loadBagProductsFromStorage.bind(this);
 		this.saveBagProductsToStorage = this.saveBagProductsToStorage.bind(this);
-		this.getCustomerBasicInfo = this.getCustomerBasicInfo.bind(this);
+		this.getCustomerInfo = this.getCustomerInfo.bind(this);
 		this.customerLogout = this.customerLogout.bind(this);
 		this.customerLogin = this.customerLogin.bind(this);
 		this.loadConsultantCode = this.loadConsultantCode.bind(this);
@@ -99,7 +100,7 @@ export default class MainRoute extends React.Component {
 		this.getDistrictsList();
 		this.getSecretQuestionsList();
 		this.loadBagProductsFromStorage();
-		this.getCustomerBasicInfo();
+		this.getCustomerInfo();
 		this.loadConsultantCode();
 	}
 
@@ -214,13 +215,13 @@ export default class MainRoute extends React.Component {
 
 	/* Authentication */
 
-	getCustomerBasicInfo() {
+	getCustomerInfo() {
 		this.state.customerToken = cookies.get('customer-token');
 		if (this.state.customerToken == null) {
 			this.setState({auth: false});
 			return;
 		}
-		fetch(Config.apiURL + "customers/basic-info", {
+		fetch(Config.apiURL + "customers/me/info", {
 			method: "GET",
 			headers: { 
 				"Content-type": "application/json; charset=UTF-8",
@@ -231,14 +232,14 @@ export default class MainRoute extends React.Component {
 			resp.json().then((data) => {
 				if ('auth' in data || 'error' in data) {
 					cookies.remove('customer-token');
-					this.setState({auth: false, customerBasicInfo: {}});
+					this.setState({auth: false, customerInfo: {}});
 				}
 				else
-					this.setState({auth: true, customerBasicInfo: data.customer});
+					this.setState({auth: true, customerInfo: data.customer});
 			})
 		})
 		.catch((e) => {
-			setTimeout(this.getCustomerBasicInfo, 5000);
+			setTimeout(this.getCustomerInfo, 5000);
 			console.log(e);
 		});
 	}
@@ -250,7 +251,7 @@ export default class MainRoute extends React.Component {
 
 	customerLogin(customerToken) {
 		cookies.set('customer-token', customerToken);
-		this.getCustomerBasicInfo();
+		this.getCustomerInfo();
 	}
 
 	/* Cookies' Dialog */
@@ -445,7 +446,7 @@ export default class MainRoute extends React.Component {
 		return <React.Fragment>
 			<ThemeProvider theme={theme}>
 				{(this.state.blockedPopup) ? <BlockedPopup blockedClick={this.blockedClick} /> : '' }
-				<CustomAppBar history={this.props.history} auth={this.state.auth} customerBasicInfo={this.state.customerBasicInfo} customerLogout={this.customerLogout}/>
+				<CustomAppBar history={this.props.history} auth={this.state.auth} customerLogout={this.customerLogout}/>
 				<div style={{display: (this.state.lastPage!='/sacola') ? 'block' : 'none'}}>
 					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1} />
 				</div>
@@ -455,6 +456,7 @@ export default class MainRoute extends React.Component {
 				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} cities={this.state.cities} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
+				<ProfileDialog auth={this.state.auth} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} cities={this.state.cities} districts={this.state.districts} secretQuestions={this.state.secretQuestions} customerInfo={this.state.customerInfo}/>
 				<ProductDialog sizes={this.state.sizes} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizes={this.state.sizes}/>
 				<Snackbar

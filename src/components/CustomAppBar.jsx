@@ -55,6 +55,7 @@ class CustomAppBar extends React.Component {
 		this.handleCustomerMenuOpen = this.handleCustomerMenuOpen.bind(this);
 		this.handleCustomerMenuClose = this.handleCustomerMenuClose.bind(this);
 		this.handleCustomerLogout = this.handleCustomerLogout.bind(this);
+		this.handleCustomerProfile = this.handleCustomerProfile.bind(this);
 	}
 
 	handleMenuOpen = (event) => {
@@ -87,6 +88,11 @@ class CustomAppBar extends React.Component {
 	handleCustomerLogout() {
 		this.setState({customerMenuAnchor: null});
 		this.props.customerLogout();
+	}
+
+	handleCustomerProfile() {
+		this.setState({customerMenuAnchor: null});
+		this.props.history.push('/perfil')
 	}
 
 	render() {
@@ -161,12 +167,12 @@ class CustomAppBar extends React.Component {
 								open={Boolean(this.state.customerMenuAnchor)}
 								onClose={this.handleCustomerMenuClose}
 							>
-								<MenuItem onClick={this.handleCustomerMenuClose}>Perfil</MenuItem>
-								<MenuItem onClick={this.handleCustomerMenuClose}>Pedidos</MenuItem>
+								<MenuItem onClick={this.handleCustomerProfile}>Meu Perfil</MenuItem>
+								<MenuItem onClick={this.handleCustomerMenuClose}>Meus Pedidos</MenuItem>
 								<MenuItem onClick={this.handleCustomerLogout}>Sair</MenuItem>
 							</Menu>
 						</React.Fragment>
-						: <Button color="inherit" style={{marginLeft: '20px'}} onClick={() => this.props.history.push('/login')}>Entrar</Button>}
+						: <Button color="inherit" style={{marginLeft: '20px'}} onClick={() => this.props.history.push('/entrar')}>Entrar</Button>}
 				</Toolbar>
 			</AppBar>
 			<Toolbar><img className={classes.logoImg} src='./assets/image/logo-small.png'/></Toolbar>

@@ -96,21 +96,26 @@ CEPMaskCustom.propTypes = {
 	inputRef: PropTypes.func.isRequired,
 };
 
-const districts = [{name: "Conjunto Riviera"}, {name: "Jardim California"}];
-
 class LoginDialog extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.pageReg = new RegExp('\^/login', '');
-		this.state = {dialogOpen: false, tab: 1,
+		this.pageReg = [];
+		this.pageReg[0] = new RegExp('(^\/entrar)', '');
+		this.pageReg[1] = new RegExp('(^\/cadastrar)', '');
+		this.pageReg[2] = new RegExp('(^\/esqueci-minha-senha)', '');
+		this.state = {dialogOpen: false, tab: 0,
 			login: '', password: '',
-			r_name: 'Pedro Henrique', r_desired_name: 'Pedro', r_cpf: '548.458.180-00', r_birthday: new Date(1999, 0, 31),
-			r_mobile: '(62) 99354-7056', r_whatsapp: '',
-			r_cep: '74730-190', r_district: null, r_street: 'Rua 11', r_number: 's/n', r_complement: 'Quadra 13 Lote 07', r_address_observation: 'Deixar com os gatos',
-			r_email: 'pedropabline2@hotmail.com', r_password: '12345678', r_password_confirm: '12345678', 
-			r_secret_question: null, r_secret_answer: 'candido',
-			r_agree: true, r_allow_email: true, r_allow_whatsapp: true,
+			r_name: '', r_desired_name: '', r_cpf: '', r_birthday: null,
+			r_mobile: '', r_whatsapp: '',
+			r_cep: '', r_district: null, r_street: '', r_number: '', r_complement: '', r_address_observation: '',
+			r_email: '', r_password: '', r_password_confirm: '', 
+			r_secret_question: null, r_secret_answer: '',
+			r_agree: false, r_allow_email: true, r_allow_whatsapp: true,
+			f_cpf: '',
+			f_birthday: null,
+			f_secret_question: null, f_secret_answer: '',
+			f_password: '', f_password_confirm: '', 
 			errorInput: '', errorMessage: '',
 			trying: false};
 		this.handleDialogClose = this.handleDialogClose.bind(this);
@@ -122,18 +127,44 @@ class LoginDialog extends React.Component {
 	}
 
 	handleDialogClose() {
-		this.setState({errorInput: ''});
-		this.props.history.push(this.props.lastPage);
+		if (!this.state.trying)
+			this.props.history.push(this.props.lastPage);
 	}
 
 	isOpened() {
-		this.state.dialogOpen = this.pageReg.test(this.props.location.pathname);
+		let dialogWasOpen = this.state.dialogOpen;
+		this.state.dialogOpen = false;
+		for (let i=0; i<this.pageReg.length; i++)
+			if (this.pageReg[i].test(this.props.location.pathname)) {
+				this.state.dialogOpen = true;
+				this.state.tab = i;
+				break;
+			}
+		if (!dialogWasOpen && this.state.dialogOpen) {
+			this.state.errorInput = '';
+			this.state.login = ''; this.state.password = '';
+			this.state.r_name = ''; this.state.r_desired_name = ''; this.state.r_cpf = ''; this.state.r_birthday = null;
+			this.state.r_mobile = ''; this.state.r_whatsapp = '';
+			this.state.r_cep = ''; this.state.r_district = null; this.state.r_street = ''; this.state.r_number = ''; this.state.r_complement = ''; this.state.r_address_observation = '';
+			this.state.r_email = ''; this.state.r_password = ''; this.state.r_password_confirm = ''; 
+			this.state.r_secret_question = null; this.state.r_secret_answer = '';
+			this.state.r_agree = false; this.state.r_allow_email = true; this.state.r_allow_whatsapp = true;
+			this.state.f_cpf = '';
+			this.state.f_birthday = null;
+			this.state.f_secret_question = null; this.state.f_secret_answer = '';
+			this.state.f_password = ''; this.state.f_password_confirm = ''; 
+			this.state.errorInput = ''; this.state.errorMessage = '';
+		}
 		if (this.state.dialogOpen && this.props.auth)
 			this.handleDialogClose();
 	}
 
 	changeTab(e, newValue) {
-		this.setState({tab: newValue});
+		if (newValue == 0)
+			this.props.history.push('/entrar');
+		else
+			this.props.history.push('/cadastrar');
+		//this.setState({tab: newValue});
 	}
 
 	handleSubmit(e) {
@@ -174,7 +205,7 @@ class LoginDialog extends React.Component {
 				setTimeout(this.handleSubmit, 5000);
 				console.log(e);
 			});
-		} else {
+		} else if (this.state.tab == 1) {
 			let birthday_date =  (this.state.r_birthday != null) ? new Date(this.state.r_birthday) : null;
 			fetch(Config.apiURL + "customers/register", {
 				method: "POST",
@@ -330,7 +361,7 @@ class LoginDialog extends React.Component {
 							break;
 							default:
 								input = 'r_unexpected';
-								message = 'Erro inexperado: '+data.error;
+								message = 'Erro inesperado: '+data.error;
 						}
 						this.setState({trying: false, errorInput: input, errorMessage: message});
 					}
@@ -338,6 +369,87 @@ class LoginDialog extends React.Component {
 						this.setState({trying: false, errorInput: ''});
 						this.props.customerLogin(data.customerToken);
 					}
+				})
+			})
+			.catch((e) => {
+				setTimeout(this.handleSubmit, 5000);
+				console.log(e);
+			});
+		} else if (this.state.tab == 2) {
+			let birthday_date =  (this.state.f_birthday != null) ? new Date(this.state.f_birthday) : null;
+			fetch(Config.apiURL + "customers/me/reset-password", {
+				method: "POST",
+				body: JSON.stringify({
+					cpf: this.state.f_cpf.replace(/[^0-9]/g, ''),
+					birthday_day: (birthday_date != null) ? birthday_date.getDate() : -1,
+					birthday_month: (birthday_date != null) ? birthday_date.getMonth() : -1,
+					birthday_year: (birthday_date != null) ? birthday_date.getFullYear() : -1,
+					password: this.state.f_password,
+					password_confirm: this.state.f_password_confirm,
+					secret_question_id: (this.state.f_secret_question != null) ? this.state.f_secret_question.id : -1,
+					secret_answer: this.state.f_secret_answer,
+				}),
+				headers: { 
+					"Content-type": "application/json; charset=UTF-8",
+				} 
+			})
+			.then((resp) => {
+				resp.json().then((data) => {
+					if ('error' in data) {
+						let input = '', message = '';
+						switch(data.error) {
+							case 'cpf invalid':
+								input = 'f_cpf';
+								message = 'CPF inválido'
+							break;
+							case 'birthday invalid':
+								input = 'f_birthday';
+								message = 'Data inválida'
+							break;
+							case 'password too short':
+								input = 'f_password';
+								message = 'Senha muito curta (min. 8)'
+							break;
+							case 'password too long':
+								input = 'f_password';
+								message = 'Senha muito longa (max. 15)'
+							break;
+							case 'password invalid':
+								input = 'f_password';
+								message = 'Senha inválida (somente números/letras/@_)'
+							break;
+							case 'password_confirm not match':
+								input = 'f_password_confirm';
+								message = 'As senhas não conferem'
+							break;
+							case 'secret_question invalid':
+								input = 'f_secret_question';
+								message = 'Pergunta inválida'
+							break;
+							case 'secret_answer too short':
+								input = 'f_secret_answer';
+								message = 'Segredo muito curto (min. 5)'
+							break;
+							case 'secret_answer too long':
+								input = 'f_secret_answer';
+								message = 'Segredo muito longo (max. 15)'
+							break;
+							case 'secret_answer invalid':
+								input = 'f_secret_answer';
+								message = 'Segredo inválido (somente números/letras/espaços/@_)'
+							break;
+							case 'wrong information':
+								input = 'f_error';
+								message = 'As informações estão incorretas, ou não existe conta com o CPF informado'
+							break;
+							default:
+								input = 'f_error';
+								message = 'Erro inesperado: '+data.error;
+						}
+						this.setState({trying: false, errorInput: input, errorMessage: message});
+					}
+					else 
+						this.setState({trying: false, errorInput: 'f_success', errorMessage: 'Senha redefinida com sucesso!'});
 				})
 			})
 			.catch((e) => {
@@ -400,12 +512,13 @@ class LoginDialog extends React.Component {
 						selectionFollowsFocus
 						centered
 					>
-						<Tab label="Entrar" disabled={this.state.trying}/>
-						<Tab label="Cadastrar" disabled={this.state.trying}/>
+						<Tab style={{display: (this.state.tab == 2) ? 'none' : 'inline-flex'}} label="Entrar" disabled={this.state.trying}/>
+						<Tab style={{display: (this.state.tab == 2) ? 'none' : 'inline-flex'}} label="Cadastrar" disabled={this.state.trying}/>
+						<Tab style={{display: (this.state.tab != 2) ? 'none' : 'inline-flex'}} label="Redefinir Senha" disabled={this.state.trying}/>
 					</Tabs>
 				</DialogTitle>
 				<DialogContent dividers ref={this.contentRef}>
-					<div style={{display: this.state.tab == 0 ? 'block' : 'none'}}>
+					{(this.state.tab == 0) ? <div>
 						<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
 							<TextField
 								required
@@ -456,8 +569,8 @@ class LoginDialog extends React.Component {
 							/>
 							<input type="submit" style={{display: 'none'}}/>
 						</form>
-					</div>
-					<div style={{display: this.state.tab == 1 ? 'block' : 'none'}}>
+					</div> : ''}
+					{(this.state.tab == 1) ? <div>
 						<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
 						<Grid container spacing={1}>
 							<Grid item xs={12}>
@@ -524,6 +637,7 @@ class LoginDialog extends React.Component {
 							<Grid item xs={6}>
 								<KeyboardDatePicker
 									clearable
+									required
 									fullWidth
 									margin="normal"
 									label="Data de Nascimento"
@@ -852,14 +966,160 @@ class LoginDialog extends React.Component {
 							</Grid>
 							<input type="submit" style={{display: 'none'}}/>
 						</form>
-					</div>
+					</div> : ''}
+					{(this.state.tab == 2) ? <div>
+						<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
+							<Grid container spacing={1}>
+								<Grid item xs={12}>
+									<TextField
+										required
+										fullWidth
+										onChange={(e) => this.setState({f_cpf: e.target.value})}
+										margin="normal"
+										id="f_cpf"
+										label="CPF"
+										value={this.state.f_cpf}
+										disabled={this.state.trying}
+										error={this.state.errorInput == 'f_cpf'}
+										helperText={(this.state.errorInput == 'f_cpf') ? this.state.errorMessage : ''}
+										placeholder="000.000.000-00"
+										InputProps={{
+											inputComponent: CPFMaskCustom,
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<KeyboardDatePicker
+										clearable
+										required
+										fullWidth
+										margin="normal"
+										label="Data de Nascimento"
+										value={this.state.f_birthday}
+										placeholder="10/10/2018"
+										onChange={(e) => this.setState({f_birthday: e})}
+										minDate={new Date(1900, 1, 1)}
+										format="DD/MM/YYYY"
+										disabled={this.state.trying}
+										error={this.state.errorInput == 'f_birthday'}
+										helperText={(this.state.errorInput == 'f_birthday') ? this.state.errorMessage : ''}
+									/>
+								</Grid>
+								<Grid item xs={12} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+									{(secretQuestionsLoaded) ?
+										<Autocomplete
+											id="r_secret_question"
+											fullWidth
+											value={this.state.f_secret_question}
+											onChange={(e, newValue) => this.setState({f_secret_question: newValue})}
+											options={this.props.secretQuestions}
+											getOptionLabel={(secretQuestion) => secretQuestion.question}
+											disabled={this.state.trying}
+											renderInput={(params) => <TextField {...params} error={this.state.errorInput == 'f_secret_question'} helperText={(this.state.errorInput == 'f_secret_question') ? this.state.errorMessage : ''} required margin="normal" label="Pergunta Secreta" />}
+										/>
+										: <CircularProgress color="primary"/>}
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required
+										fullWidth
+										onChange={(e) => this.setState({f_secret_answer: e.target.value})}
+										margin="normal"
+										id="f_secret_answer"
+										label="Resposta Secreta"
+										value={this.state.f_secret_answer}
+										disabled={this.state.trying}
+										error={this.state.errorInput == 'f_secret_answer'}
+										helperText={(this.state.errorInput == 'f_secret_answer') ? this.state.errorMessage : ''}
+										InputProps={{
+											inputProps: {
+												maxLength: 15
+											}
+										}}
+										placeholder=""
+									/>
+								</Grid>
+								<Grid item xs={6}>
+									<TextField
+										required
+										fullWidth
+										onChange={(e) => this.setState({f_password: e.target.value})}
+										margin="normal"
+										type="password"
+										id="f_password"
+										label="Nova Senha"
+										defaultValue={this.state.f_password}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<LockIcon />
+												</InputAdornment>
+											),
+											inputProps: {
+												maxLength: 15
+											}
+										}}
+										disabled={this.state.trying}
+										error={this.state.errorInput == 'f_password'}
+										helperText={(this.state.errorInput == 'f_password') ? this.state.errorMessage : ''}
+										autoComplete="new-password"
+									/>
+								</Grid>
+								<Grid item xs={6}>
+									<TextField
+										required
+										fullWidth
+										onChange={(e) => this.setState({f_password_confirm: e.target.value})}
+										margin="normal"
+										type="password"
+										id="f_password_confirm"
+										label="Confirmação de Senha"
+										defaultValue={this.state.f_password_confirm}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<LockIcon />
+												</InputAdornment>
+											),
+											inputProps: {
+												maxLength: 15
+											}
+										}}
+										disabled={this.state.trying}
+										error={this.state.errorInput == 'f_password_confirm'}
+										helperText={(this.state.errorInput == 'f_password_confirm') ? this.state.errorMessage : ''}
+										autoComplete="new-password"
+									/>
+								</Grid>
+								{(this.state.errorInput == 'f_error') ?
+									<Grid item xs={12}>
+										<Alert severity="error">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+								{(this.state.errorInput == 'f_success') ?
+								<Grid item xs={12}>
+									<Alert severity="success">
+										<AlertTitle>{this.state.errorMessage}</AlertTitle>
+									</Alert>
+								</Grid> : ''}
+							</Grid>
+							<input type="submit" style={{display: 'none'}}/>
+						</form>
+					</div> : ''}
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={this.handleDialogClose} disabled={this.state.trying}>
+					{(this.state.tab != 2) ?<Button onClick={this.handleDialogClose} disabled={this.state.trying}>
 						Cancelar
-					</Button>
+					</Button> : ''}
+					{(this.state.tab == 0) ?<Button onClick={() => this.props.history.push('/esqueci-minha-senha')} disabled={this.state.trying}>
+						Esqueci minha senha
+					</Button> : ''}
+					{(this.state.tab == 2) ?<Button onClick={() => this.props.history.push('/entrar')} disabled={this.state.trying}>
+						Voltar
+					</Button> : ''}
 					<Button onClick={this.handleSubmit} color="primary" disabled={this.state.trying}>
-						{(this.state.tab == 0) ? 'Entrar' : 'Cadastrar'}
+						{(this.state.tab == 0) ? 'Entrar' : (this.state.tab == 1) ? 'Cadastrar' : 'Redefinir Senha'}
 					</Button>
 				</DialogActions>
 			</Dialog>
