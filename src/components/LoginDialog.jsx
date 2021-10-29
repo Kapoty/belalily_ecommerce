@@ -377,7 +377,7 @@ class LoginDialog extends React.Component {
 			});
 		} else if (this.state.tab == 2) {
 			let birthday_date =  (this.state.f_birthday != null) ? new Date(this.state.f_birthday) : null;
-			fetch(Config.apiURL + "customers/me/reset-password", {
+			fetch(Config.apiURL + "customers/reset-password", {
 				method: "POST",
 				body: JSON.stringify({
 					cpf: this.state.f_cpf.replace(/[^0-9]/g, ''),
@@ -497,7 +497,7 @@ class LoginDialog extends React.Component {
 
 		this.isOpened();
 
-		let citiesLoaded = !(Object.keys(this.props.cities).length === 0);
+		let citiesLoaded = !(Object.keys(this.props.citiesById).length === 0);
 		let districtsLoaded = !(this.props.districts.length === 0);
 		let secretQuestionsLoaded = !(this.props.secretQuestions.length === 0);
 
@@ -527,7 +527,7 @@ class LoginDialog extends React.Component {
 								margin="normal"
 								id="login"
 								label="CPF ou E-mail"
-								defaultValue={this.state.login}
+								value={this.state.login}
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position="start">
@@ -551,7 +551,7 @@ class LoginDialog extends React.Component {
 								type="password"
 								id="password"
 								label="Senha"
-								defaultValue={this.state.password}
+								value={this.state.password}
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position="start">
@@ -646,6 +646,7 @@ class LoginDialog extends React.Component {
 									onChange={(e) => this.setState({r_birthday: e})}
 									minDate={new Date(1900, 1, 1)}
 									format="DD/MM/YYYY"
+									disableFuture
 									disabled={this.state.trying}
 									error={this.state.errorInput == 'r_birthday'}
 									helperText={(this.state.errorInput == 'r_birthday') ? this.state.errorMessage : ''}
@@ -717,7 +718,7 @@ class LoginDialog extends React.Component {
 											value={this.state.r_district}
 											onChange={(e, newValue) => this.setState({r_district: newValue})}
 											options={this.props.districts}
-											getOptionLabel={(district) => `${district.name} - ${this.props.cities[district.city_id].name}/${this.props.cities[district.city_id].uf}`}
+											getOptionLabel={(district) => `${district.name} - ${this.props.citiesById[district.city_id].name}/${this.props.citiesById[district.city_id].uf}`}
 											disabled={this.state.trying}
 											renderInput={(params) => <TextField {...params} error={this.state.errorInput == 'r_district'} helperText={(this.state.errorInput == 'r_district') ? this.state.errorMessage : ''} required margin="normal" label="Bairro" />}
 										/>
@@ -814,7 +815,7 @@ class LoginDialog extends React.Component {
 										margin="normal"
 										id="r_email"
 										label="E-mail"
-										defaultValue={this.state.r_email}
+										value={this.state.r_email}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
@@ -839,7 +840,7 @@ class LoginDialog extends React.Component {
 										type="password"
 										id="r_password"
 										label="Senha"
-										defaultValue={this.state.r_password}
+										value={this.state.r_password}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
@@ -865,7 +866,7 @@ class LoginDialog extends React.Component {
 										type="password"
 										id="r_password_confirm"
 										label="Confirmação de Senha"
-										defaultValue={this.state.r_password_confirm}
+										value={this.state.r_password_confirm}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
@@ -1048,7 +1049,7 @@ class LoginDialog extends React.Component {
 										type="password"
 										id="f_password"
 										label="Nova Senha"
-										defaultValue={this.state.f_password}
+										value={this.state.f_password}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
@@ -1074,7 +1075,7 @@ class LoginDialog extends React.Component {
 										type="password"
 										id="f_password_confirm"
 										label="Confirmação de Senha"
-										defaultValue={this.state.f_password_confirm}
+										value={this.state.f_password_confirm}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">

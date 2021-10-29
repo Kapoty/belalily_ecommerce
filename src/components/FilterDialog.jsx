@@ -91,7 +91,7 @@ class ProductDialog extends React.Component {
 	render() {
 		const { classes } = this.props;
 
-		let sizesLoaded = !(Object.keys(this.props.sizes).length === 0);
+		let sizesLoaded = !(Object.keys(this.props.sizesById).length === 0);
 
 		return <React.Fragment>
 			<Dialog open={this.props.open} onClose={this.handleDialogClose} TransitionComponent={Transition} className={classes.root}>
@@ -107,8 +107,8 @@ class ProductDialog extends React.Component {
 							Filtar por Tamanho
 						</Typography>
 						<div className={classes.sizeOptions}>
-							{(sizesLoaded) ? Object.keys(this.props.sizes).map((sizeId) => (
-								<Chip className={classes.sizeChip} label={this.props.sizes[sizeId].name} key={sizeId} onClick={() => this.toggleSize(sizeId)} color={this.state.sizes.includes(sizeId) ? "primary" : 'default'}/>))
+							{(sizesLoaded) ? Object.keys(this.props.sizesById).map((sizeId) => (
+								<Chip className={classes.sizeChip} label={this.props.sizesById[sizeId].name} key={sizeId} onClick={() => this.toggleSize(sizeId)} color={this.state.sizes.includes(sizeId) ? "primary" : 'default'}/>))
 								: <CircularProgress color="primary"/>
 							}
 						</div>

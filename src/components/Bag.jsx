@@ -90,7 +90,7 @@ class Bag extends React.Component {
 						<StepContent>
 							<div className={classes.cards}>
 								{this.props.bag.products.map((product) => 
-									<BagProduct key={product.id+'-'+product.sizeId} product={product} sizes={this.props.sizes}
+									<BagProduct key={product.id+'-'+product.sizeId} product={product} sizesById={this.props.sizesById}
 									increaseProductFromBag={this.props.increaseProductFromBag}
 									decreaseProductFromBag={this.props.decreaseProductFromBag}
 									deleteProductFromBag={this.props.deleteProductFromBag}/>)}

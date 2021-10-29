@@ -82,7 +82,7 @@ class BagProduct extends React.Component {
 	render() {
 		const { classes } = this.props;
 
-		let sizesLoaded = !(Object.keys(this.props.sizes).length === 0);
+		let sizesLoaded = !(Object.keys(this.props.sizesById).length === 0);
 
 		return <React.Fragment>
 			<Card className={classes.root}>
@@ -101,7 +101,7 @@ class BagProduct extends React.Component {
 						</Typography>
 						<div className={classes.sizeSection}>
 							<div className={classes.sizeOptions}>
-								{(sizesLoaded) ? <Chip className={classes.sizeChip} label={this.props.sizes[this.props.product.sizeId].name} color="primary"/> : <CircularProgress color="primary"/>}
+								{(sizesLoaded) ? <Chip className={classes.sizeChip} label={this.props.sizesById[this.props.product.sizeId].name} color="primary"/> : <CircularProgress color="primary"/>}
 							</div>
 						</div>
 						<div className={classes.qntSection}>

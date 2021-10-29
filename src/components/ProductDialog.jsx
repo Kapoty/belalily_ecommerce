@@ -224,7 +224,7 @@ class ProductDialog extends React.Component {
 		}
 
 		let productLoaded = !(Object.keys(this.state.product).length === 0);
-		let sizesLoaded = !(Object.keys(this.props.sizes).length === 0);
+		let sizesLoaded = !(Object.keys(this.props.sizesById).length === 0);
 
 		return <React.Fragment>
 			<Dialog fullScreen open={this.state.dialogOpen} onClose={this.handleDialogClose} TransitionComponent={Transition} className={classes.root}>
@@ -280,7 +280,7 @@ class ProductDialog extends React.Component {
 						</Typography>
 						<div className={classes.sizeOptions}>
 							{(productLoaded && sizesLoaded && this.state.product.sizes != null) ? this.state.product.sizes.split(',').map((sizeId) => 
-								<Chip className={classes.sizeChip} label={this.props.sizes[sizeId].name} key={sizeId} onClick={() => this.setSize(sizeId)} color={this.state.selectedSize == sizeId ? "primary" : 'default'}/>)
+								<Chip className={classes.sizeChip} label={this.props.sizesById[sizeId].name} key={sizeId} onClick={() => this.setSize(sizeId)} color={this.state.selectedSize == sizeId ? "primary" : 'default'}/>)
 								: <CircularProgress color="primary"/>
 							}
 						</div>

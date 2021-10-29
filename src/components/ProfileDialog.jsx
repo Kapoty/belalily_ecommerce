@@ -118,6 +118,10 @@ class ProfileDialog extends React.Component {
 		this.pageReg[4] = new RegExp('(^\/perfil/notificacoes$)', '');
 		this.state = {dialogOpen: false, tab: 0, editing: 0,
 			name: '', desired_name: '', birthday: null, mobile: '', whatsapp: '',
+			cep: '', district: null, street: '', number: '', complement: '', address_observation: '',
+			password: '', new_password: '', new_password_confirm: '',
+			secret_question: null, secret_answer: '',
+			allow_email: false, allow_whatsapp: false,
 			errorInput: '', errorMessage: '',
 			trying: false};
 		this.handleDialogClose = this.handleDialogClose.bind(this);
@@ -176,6 +180,8 @@ class ProfileDialog extends React.Component {
 	handleSubmit(e) {
 		if (e != undefined)
 			e.preventDefault();
+		if (!this.state.editing)
+			return;
 		switch(this.state.tab) {
 			case 0:
 				let birthday_date =  (this.state.birthday != null) ? new Date(this.state.birthday) : null;
@@ -230,7 +236,7 @@ class ProfileDialog extends React.Component {
 								break;
 								default:
 									input = 'personal_unexpected';
-									message = "Erro inesperado";
+									message = 'Erro inesperado: '+data.error;
 								break;
 							}
 							this.setState({trying: false, errorInput: input, errorMessage: message});
@@ -246,12 +252,241 @@ class ProfileDialog extends React.Component {
 					console.log(e);
 				});
 			break;
+			case 1:
+				fetch(Config.apiURL + "customers/me/address", {
+					method: "PATCH",
+					body: JSON.stringify({
+						cep: this.state.cep.replace(/[^0-9]/g, ''),
+						district_id: (this.state.district != null) ? this.state.district.id : -1,
+						street: this.state.street,
+						number: this.state.number,
+						complement: this.state.complement,
+						address_observation: this.state.address_observation,
+					}),
+					headers: { 
+						"Content-type": "application/json; charset=UTF-8",
+						"x-customer-token": this.props.customerToken,
+					} 
+				})
+				.then((resp) => {
+					resp.json().then((data) => {
+						if ('error' in data) {
+							let input = '', message = '';
+							switch(data.error) {
+								case 'cep invalid':
+									input = 'cep';
+									message = 'CEP inválido'
+								break;
+								case 'district invalid':
+									input = 'district';
+									message = 'Bairro inválido'
+								break;
+								case 'street too short':
+									input = 'street';
+									message = 'Muito curto'
+								break;
+								case 'street too long':
+									input = 'street';
+									message = 'Muito longo'
+								break;
+								case 'number too short':
+									input = 'number';
+									message = 'Muito curto'
+								break;
+								case 'number too long':
+									input = 'number';
+									message = 'Muito longo'
+								break;
+								case 'complement too long':
+									input = 'complement';
+									message = 'Muito longo'
+								break;
+								case 'address_observation too short':
+									input = 'address_observation';
+									message = 'Muito curto'
+								break;
+								case 'address_observation too long':
+									input = 'address_observation';
+									message = 'Muito longo'
+								break;
+								default:
+									input = 'address_unexpected';
+									message = 'Erro inesperado: '+data.error;
+								break;
+							}
+							this.setState({trying: false, errorInput: input, errorMessage: message});
+						}
+						else {
+							this.setState({trying: false, errorInput: '', editing: false, errorInput: 'address_success', errorMessage: 'Endereço atualizado com sucesso!'});
+							this.props.getCustomerInfo();
+						}
+					})
+				})
+				.catch((e) => {
+					setTimeout(this.handleSubmit, 5000);
+					console.log(e);
+				});
+			break;
+			case 2:
+				fetch(Config.apiURL + "customers/me/update-password", {
+					method: "POST",
+					body: JSON.stringify({
+						password: this.state.password,
+						new_password: this.state.new_password,
+						new_password_confirm: this.state.new_password_confirm,
+					}),
+					headers: { 
+						"Content-type": "application/json; charset=UTF-8",
+						"x-customer-token": this.props.customerToken,
+					} 
+				})
+				.then((resp) => {
+					resp.json().then((data) => {
+						if ('error' in data) {
+							let input = '', message = '';
+							switch(data.error) {
+								case 'password too short':
+									input = 'password';
+									message = 'Senha muito curta (min. 8)'
+								break;
+								case 'password too long':
+									input = 'password';
+									message = 'Senha muito longa (max. 15)'
+								break;
+								case 'password invalid':
+									input = 'password';
+									message = 'Senha inválida (somente números/letras/@_)'
+								break;
+								case 'password incorrect':
+									input = 'password';
+									message = 'Senha incorreta'
+								break;
+								case 'new_password too short':
+									input = 'new_password';
+									message = 'Senha muito curta (min. 8)'
+								break;
+								case 'new_password too long':
+									input = 'new_password';
+									message = 'Senha muito longa (max. 15)'
+								break;
+								case 'new_password invalid':
+									input = 'new_password';
+									message = 'Senha inválida (somente números/letras/@_)'
+								break;
+								case 'new_password_confirm not match':
+									input = 'new_password_confirm';
+									message = 'As senhas não conferem'
+								break;
+								default:
+									input = 'access_unexpected';
+									message = 'Erro inesperado: '+data.error;
+								break;
+							}
+							this.setState({trying: false, errorInput: input, errorMessage: message});
+						}
+						else {
+							this.setState({trying: false, errorInput: '', editing: false, errorInput: 'access_success', errorMessage: 'Senha alterada com sucesso!'});
+							this.props.getCustomerInfo();
+						}
+					})
+				})
+				.catch((e) => {
+					setTimeout(this.handleSubmit, 5000);
+					console.log(e);
+				});
+			break;
+			case 3:
+				fetch(Config.apiURL + "customers/me/update-recover", {
+					method: "POST",
+					body: JSON.stringify({
+						secret_question_id: (this.state.secret_question != null) ? this.state.secret_question.id : -1,
+						secret_answer: this.state.secret_answer,
+					}),
+					headers: { 
+						"Content-type": "application/json; charset=UTF-8",
+						"x-customer-token": this.props.customerToken,
+					} 
+				})
+				.then((resp) => {
+					resp.json().then((data) => {
+						if ('error' in data) {
+							let input = '', message = '';
+							switch(data.error) {
+								case 'secret_question invalid':
+									input = 'secret_question';
+									message = 'Pergunta inválida'
+								break;
+								case 'secret_answer too short':
+									input = 'secret_answer';
+									message = 'Segredo muito curto (min. 5)'
+								break;
+								case 'secret_answer too long':
+									input = 'secret_answer';
+									message = 'Segredo muito longo (max. 15)'
+								break;
+								case 'secret_answer invalid':
+									input = 'secret_answer';
+									message = 'Segredo inválido (somente números/letras/espaços/@_)'
+								break;
+								default:
+									input = 'recover_unexpected';
+									message = 'Erro inesperado: '+data.error;
+								break;
+							}
+							this.setState({trying: false, errorInput: input, errorMessage: message});
+						}
+						else {
+							this.setState({trying: false, errorInput: '', editing: false, errorInput: 'recover_success', errorMessage: 'Segredos alterados com sucesso!'});
+							this.props.getCustomerInfo();
+						}
+					})
+				})
+				.catch((e) => {
+					setTimeout(this.handleSubmit, 5000);
+					console.log(e);
+				});
+			break;
+			case 4:
+				fetch(Config.apiURL + "customers/me/update-notification", {
+					method: "POST",
+					body: JSON.stringify({
+						allow_email: this.state.allow_email,
+						allow_whatsapp: this.state.allow_whatsapp,
+					}),
+					headers: { 
+						"Content-type": "application/json; charset=UTF-8",
+						"x-customer-token": this.props.customerToken,
+					} 
+				})
+				.then((resp) => {
+					resp.json().then((data) => {
+						if ('error' in data) {
+							let input = '', message = '';
+							switch(data.error) {
+								default:
+									input = 'notification_unexpected';
+									message = 'Erro inesperado: '+data.error;
+								break;
+							}
+							this.setState({trying: false, errorInput: input, errorMessage: message});
+						}
+						else {
+							this.setState({trying: false, errorInput: '', editing: false, errorInput: 'notification_success', errorMessage: 'Notificações alteradas com sucesso!'});
+							this.props.getCustomerInfo();
+						}
+					})
+				})
+				.catch((e) => {
+					setTimeout(this.handleSubmit, 5000);
+					console.log(e);
+				});
+			break;
 		}
 		this.setState({trying: true});
 	}
 
 	handleCancel() {
-		this.setState({editing: false});
+		this.setState({editing: false, errorInput: ''});
 	}
 
 	onCepChange(e) {
@@ -263,13 +498,13 @@ class ProfileDialog extends React.Component {
 			.then((resp) => {
 				resp.json().then((data) => {
 					if (!('error' in data)) {
-						let r_district = null;
+						let district = null;
 						for (let i=0; i<this.props.districts.length; i++)
 							if (this.props.districts[i].api_name == data.bairro) {
-								r_district = this.props.districts[i];
+								district = this.props.districts[i];
 								break;
 							}
-						this.setState({street: data.logradouro, complement: data.complemento, district: r_district});
+						this.setState({street: data.logradouro, complement: data.complemento, district: district});
 					}
 				})
 			})
@@ -293,6 +528,43 @@ class ProfileDialog extends React.Component {
 					whatsapp: this.props.customerInfo.whatsapp,
 				});
 			break;
+			case 1:
+				this.setState({
+					editing: true,
+					errorInput: '',
+					cep: this.props.customerInfo.cep,
+					district: this.props.districtsById[this.props.customerInfo.district_id],
+					street: this.props.customerInfo.street,
+					number: this.props.customerInfo.number,
+					complement: this.props.customerInfo.complement,
+					address_observation: this.props.customerInfo.address_observation,
+				});
+			break;
+			case 2:
+				this.setState({
+					editing: true,
+					errorInput: '',
+					password: '',
+					new_password: '',
+					new_password_confirm: '',
+				});
+			break;
+			case 3:
+				this.setState({
+					editing: true,
+					errorInput: '',
+					secret_question: this.props.secretQuestionsById[this.props.customerInfo.secret_question_id],
+					secret_answer: '',
+				});
+			break;
+			case 4:
+				this.setState({
+					editing: true,
+					errorInput: '',
+					allow_email: this.props.customerInfo.allow_email,
+					allow_whatsapp: this.props.customerInfo.allow_whatsapp,
+				});
+			break;
 		}
 	}
 
@@ -302,7 +574,7 @@ class ProfileDialog extends React.Component {
 		this.isOpened();
 
 		let customerInfoLoaded = !(Object.keys(this.props.customerInfo).length === 0);
-		let citiesLoaded = !(Object.keys(this.props.cities).length === 0);
+		let citiesLoaded = !(Object.keys(this.props.citiesById).length === 0);
 		let districtsLoaded = !(this.props.districts.length === 0);
 		let secretQuestionsLoaded = !(this.props.secretQuestions.length === 0);
 
@@ -397,6 +669,7 @@ class ProfileDialog extends React.Component {
 											onChange={(e) => this.setState({birthday: e})}
 											minDate={new Date(1900, 1, 1)}
 											format="DD/MM/YYYY"
+											disableFuture
 											disabled={this.state.trying || !this.state.editing}
 											error={this.state.errorInput == 'birthday'}
 											helperText={(this.state.errorInput == 'birthday') ? this.state.errorMessage : ''}
@@ -452,309 +725,372 @@ class ProfileDialog extends React.Component {
 										</Alert>
 									</Grid> : ''}
 								</Grid>
+								<input type="submit" style={{display: 'none'}}/>
 							</form>
 						</div> : ''}
-						{(this.state.tab < 2) ? <React.Fragment>
-							{(!this.state.editing) ? <Button onClick={this.handleChangeInfo} disabled={this.state.trying}>
-								Atualizar {(this.state.tab == 0) ? 'Informações' : 'Endereço'}
-							</Button> : <React.Fragment>
-								<Button onClick={this.handleCancel} disabled={this.state.trying}>
-									Cancelar
-								</Button>
-								<Button onClick={this.handleSubmit} disabled={this.state.trying} color="primary">
-									Salvar {(this.state.tab == 0) ? 'Informações' : 'Endereço'}
-								</Button>
-							</React.Fragment>}
-						</React.Fragment> : ''}
+						{(this.state.tab == 1) ? <div>
+							<form action="#" onSubmit={this.handleSubmit}>
+								<Grid container spacing={1}>
+									<Grid item xs={6}>
+										<TextField
+											readOnly={!this.state.editing}
+											fullWidth
+											required
+											onChange={this.onCepChange}
+											margin="normal"
+											id="cep"
+											label="CEP"
+											value={(!this.state.editing) ? this.props.customerInfo.cep : this.state.cep}
+											disabled={this.state.trying}
+											error={this.state.errorInput == 'cep'}
+											helperText={(this.state.errorInput == 'cep') ? this.state.errorMessage : ''}
+											placeholder="00000-000"
+											InputProps={{
+												inputComponent: CEPMaskCustom,
+											}}
+										/>
+									</Grid>
+									<Grid item xs={6} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+										{(citiesLoaded && districtsLoaded) ?
+											<Autocomplete
+												id="district"
+												fullWidth
+												value={(!this.state.editing) ? this.props.districtsById[this.props.customerInfo.district_id] : this.state.district}
+												onChange={(e, newValue) => this.setState({district: newValue})}
+												options={this.props.districts}
+												getOptionLabel={(district) => `${district.name} - ${this.props.citiesById[district.city_id].name}/${this.props.citiesById[district.city_id].uf}`}
+												disabled={this.state.trying || !this.state.editing}
+												renderInput={(params) => <TextField {...params} error={this.state.errorInput == 'district'} helperText={(this.state.errorInput == 'district') ? this.state.errorMessage : ''} required margin="normal" label="Bairro" />}
+											/>
+											: <CircularProgress color="primary"/>}
+									</Grid>
+									<Grid item xs={6}>
+										<TextField
+											readOnly={!this.state.editing}
+											required
+											fullWidth
+											onChange={(e) => this.setState({street: e.target.value})}
+											margin="normal"
+											id="street"
+											label="Logradouro"
+											value={(!this.state.editing) ? this.props.customerInfo.street : this.state.street}
+											disabled={this.state.trying}
+											error={this.state.errorInput == 'street'}
+											helperText={(this.state.errorInput == 'street') ? this.state.errorMessage : ''}
+											InputProps={{
+												inputProps: {
+													maxLength: 30
+												}
+											}}
+											placeholder="Rua 123"
+										/>
+									</Grid>
+									<Grid item xs={6}>
+										<TextField
+											readOnly={!this.state.editing}
+											required
+											fullWidth
+											onChange={(e) => this.setState({number: e.target.value})}
+											margin="normal"
+											id="number"
+											label="Número"
+											value={(!this.state.editing) ? this.props.customerInfo.number : this.state.number}
+											disabled={this.state.trying}
+											error={this.state.errorInput == 'number'}
+											helperText={(this.state.errorInput == 'number') ? this.state.errorMessage : ''}
+											InputProps={{
+												inputProps: {
+													maxLength: 10
+												}
+											}}
+											placeholder="456"
+										/>
+									</Grid>
+									<Grid item xs={6}>
+										<TextField
+											readOnly={!this.state.editing}
+											fullWidth
+											onChange={(e) => this.setState({complement: e.target.value})}
+											margin="normal"
+											id="complement"
+											label="Complemento"
+											value={(!this.state.editing) ? this.props.customerInfo.complement : this.state.complement}
+											disabled={this.state.trying}
+											error={this.state.errorInput == 'complement'}
+											helperText={(this.state.errorInput == 'complement') ? this.state.errorMessage : ''}
+											InputProps={{
+												inputProps: {
+													maxLength: 30
+												}
+											}}
+											placeholder="Quadra 7 Lote 8..."
+										/>
+									</Grid>
+									<Grid item xs={6}>
+										<TextField
+											readOnly={!this.state.editing}
+											fullWidth
+											onChange={(e) => this.setState({address_observation: e.target.value})}
+											margin="normal"
+											id="address_observation"
+											label="Observação"
+											value={(!this.state.editing) ? this.props.customerInfo.address_observation : this.state.address_observation}
+											disabled={this.state.trying}
+											error={this.state.errorInput == 'address_observation'}
+											helperText={(this.state.errorInput == 'address_observation') ? this.state.errorMessage : ''}
+											InputProps={{
+												inputProps: {
+													maxLength: 50
+												}
+											}}
+											placeholder="Deixar com o porteiro..."
+										/>
+									</Grid>
+									{(this.state.errorInput == 'address_unexpected') ?
+									<Grid item xs={12}>
+										<Alert severity="error">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+									{(this.state.errorInput == 'address_success') ?
+									<Grid item xs={12}>
+										<Alert severity="success">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+								</Grid>
+								<input type="submit" style={{display: 'none'}}/>
+							</form>
+						</div> : ''}
+						{(this.state.tab == 2) ? <div>
+							<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
+								<Grid container spacing={1}>
+									<Grid item xs={12}>
+										<TextField
+											readOnly
+											required
+											fullWidth
+											margin="normal"
+											id="email"
+											label="E-mail"
+											value={this.props.customerInfo.email}
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<AccountCircle />
+													</InputAdornment>
+												),
+												inputProps: {
+													maxLength: 254
+												}
+											}}
+											disabled
+										/>
+									</Grid>
+									{(this.state.editing) ? <React.Fragment>
+										<Grid item xs={6}>
+											<TextField
+												required
+												fullWidth
+												onChange={(e) => this.setState({password: e.target.value})}
+												margin="normal"
+												type="password"
+												id="password"
+												label="Senha Atual"
+												value={this.state.password}
+												InputProps={{
+													startAdornment: (
+														<InputAdornment position="start">
+															<LockIcon />
+														</InputAdornment>
+													),
+													inputProps: {
+														maxLength: 15
+													}
+												}}
+												disabled={this.state.trying}
+												error={this.state.errorInput == 'password'}
+												helperText={(this.state.errorInput == 'password') ? this.state.errorMessage : ''}
+											/>
+										</Grid>
+										<Grid item xs={6}></Grid>
+										<Grid item xs={6}>
+											<TextField
+												required
+												fullWidth
+												onChange={(e) => this.setState({new_password: e.target.value})}
+												margin="normal"
+												type="password"
+												id="new_password"
+												label="Nova Senha"
+												value={this.state.new_password}
+												InputProps={{
+													startAdornment: (
+														<InputAdornment position="start">
+															<LockIcon />
+														</InputAdornment>
+													),
+													inputProps: {
+														maxLength: 15
+													}
+												}}
+												disabled={this.state.trying}
+												error={this.state.errorInput == 'new_password'}
+												helperText={(this.state.errorInput == 'new_password') ? this.state.errorMessage : ''}
+												autoComplete="new-password"
+											/>
+										</Grid>
+										<Grid item xs={6}>
+											<TextField
+												required
+												fullWidth
+												onChange={(e) => this.setState({new_password_confirm: e.target.value})}
+												margin="normal"
+												type="password"
+												id="new_password_confirm"
+												label="Confirmação de Senha"
+												value={this.state.new_password_confirm}
+												InputProps={{
+													startAdornment: (
+														<InputAdornment position="start">
+															<LockIcon />
+														</InputAdornment>
+													),
+													inputProps: {
+														maxLength: 15
+													}
+												}}
+												disabled={this.state.trying}
+												error={this.state.errorInput == 'new_password_confirm'}
+												helperText={(this.state.errorInput == 'new_password_confirm') ? this.state.errorMessage : ''}
+												autoComplete="new-password"
+											/>
+										</Grid>
+									</React.Fragment> : ''}
+									{(this.state.errorInput == 'access_unexpected') ?
+									<Grid item xs={12}>
+										<Alert severity="error">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+									{(this.state.errorInput == 'access_success') ?
+									<Grid item xs={12}>
+										<Alert severity="success">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+								</Grid>
+								<input type="submit" style={{display: 'none'}}/>
+							</form>
+						</div> : ''}
+						{(this.state.tab == 3) ? <div>
+							<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
+								<Grid container spacing={1}>
+									<Grid item xs={12} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+										{(secretQuestionsLoaded) ?
+											<Autocomplete
+												id="secret_question"
+												fullWidth
+												value={(!this.state.editing) ? this.props.secretQuestionsById[this.props.customerInfo.secret_question_id] : this.state.secret_question}
+												onChange={(e, newValue) => this.setState({secret_question: newValue})}
+												options={this.props.secretQuestions}
+												getOptionLabel={(secretQuestion) => secretQuestion.question}
+												disabled={this.state.trying || !this.state.editing}
+												renderInput={(params) => <TextField {...params} error={this.state.errorInput == 'secret_question'} helperText={(this.state.errorInput == 'secret_question') ? this.state.errorMessage : ''} required margin="normal" label="Pergunta Secreta" />}
+											/>
+											: <CircularProgress color="primary"/>}
+									</Grid>
+									<Grid item xs={12}>
+										<TextField
+											readOnly={!this.state.editing}
+											required
+											fullWidth
+											onChange={(e) => this.setState({secret_answer: e.target.value})}
+											margin="normal"
+											id="secret_answer"
+											label="Resposta Secreta"
+											value={(!this.state.editing) ? '********' : this.state.secret_answer}
+											disabled={this.state.trying}
+											error={this.state.errorInput == 'secret_answer'}
+											helperText={(this.state.errorInput == 'secret_answer') ? this.state.errorMessage : ''}
+											InputProps={{
+												inputProps: {
+													maxLength: 15
+												}
+											}}
+											placeholder=""
+										/>
+									</Grid>
+									{(this.state.errorInput == 'recover_unexpected') ?
+									<Grid item xs={12}>
+										<Alert severity="error">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+									{(this.state.errorInput == 'recover_success') ?
+									<Grid item xs={12}>
+										<Alert severity="success">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+								</Grid>
+								<input type="submit" style={{display: 'none'}}/>
+							</form>
+						</div> : ''}
+						{(this.state.tab == 4) ? <div>
+							<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
+								<Grid container spacing={1}>
+									<Grid item xs={12}>
+										<FormControlLabel
+											onChange={(e, newValue) => this.setState({allow_email: newValue})}
+											control={<Checkbox color="primary" checked={(!this.state.editing) ? this.props.customerInfo.allow_email : this.state.allow_email} />}
+											label="Aceito receber promoções e avisos por E-mail"
+											labelPlacement="start"
+											disabled={this.state.trying || !this.state.editing}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<FormControlLabel
+											onChange={(e, newValue) => this.setState({allow_whatsapp: newValue})}
+											control={<Checkbox color="primary" checked={(!this.state.editing) ? this.props.customerInfo.allow_whatsapp : this.state.allow_whatsapp}/>}
+											label="Aceito receber promoções e avisos pelo Whatsapp"
+											labelPlacement="start"
+											disabled={this.state.trying || !this.state.editing}
+										/>
+									</Grid>
+									{(this.state.errorInput == 'notification_unexpected') ?
+									<Grid item xs={12}>
+										<Alert severity="error">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+									{(this.state.errorInput == 'notification_success') ?
+									<Grid item xs={12}>
+										<Alert severity="success">
+											<AlertTitle>{this.state.errorMessage}</AlertTitle>
+										</Alert>
+									</Grid> : ''}
+								</Grid>
+								<input type="submit" style={{display: 'none'}}/>
+							</form>
+						</div> : ''}
+						{(!this.state.editing) ? <Button onClick={this.handleChangeInfo} disabled={this.state.trying}>
+							{(this.state.tab == 0) ? 'Atualizar Informações' :
+							(this.state.tab == 1) ? 'Atualizar Endereço' :
+							(this.state.tab == 2) ? 'Alterar Senha' :
+							(this.state.tab == 3) ? 'Alterar Segredos' :
+							'Alterar Notificações'}
+						</Button> :
+						<React.Fragment>
+							<Button onClick={this.handleCancel} disabled={this.state.trying}>
+								Cancelar
+							</Button>
+							<Button onClick={this.handleSubmit} disabled={this.state.trying} color="primary">
+								Salvar
+							</Button>
+						</React.Fragment>}
 					</React.Fragment> : ''}
 					{(!customerInfoLoaded) ? <div className={classes.progressArea}><CircularProgress color="primary"/></div> : ''}
-								{/*
-								
-							</Grid>
-						</form>
-					</div> : ''
-							{/*
-								<Grid item xs={12}>
-									<Typography variant="h6" align="center">
-										Endereço de Entrega
-									</Typography>
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										fullWidth
-										required
-										onChange={this.onRCepChange}
-										margin="normal"
-										id="r_cep"
-										label="CEP"
-										value={this.state.r_cep}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_cep'}
-										helperText={(this.state.errorInput == 'r_cep') ? this.state.errorMessage : ''}
-										placeholder="00000-000"
-										InputProps={{
-											inputComponent: CEPMaskCustom,
-										}}
-									/>
-								</Grid>
-								<Grid item xs={6} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-									{(citiesLoaded && districtsLoaded) ?
-										<Autocomplete
-											id="r_district"
-											fullWidth
-											value={this.state.r_district}
-											onChange={(e, newValue) => this.setState({r_district: newValue})}
-											options={this.props.districts}
-											getOptionLabel={(district) => `${district.name} - ${this.props.cities[district.city_id].name}/${this.props.cities[district.city_id].uf}`}
-											disabled={this.state.trying}
-											renderInput={(params) => <TextField {...params} error={this.state.errorInput == 'r_district'} helperText={(this.state.errorInput == 'r_district') ? this.state.errorMessage : ''} required margin="normal" label="Bairro" />}
-										/>
-										: <CircularProgress color="primary"/>}
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										required
-										fullWidth
-										onChange={(e) => this.setState({r_street: e.target.value})}
-										margin="normal"
-										id="r_street"
-										label="Logradouro"
-										value={this.state.r_street}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_street'}
-										helperText={(this.state.errorInput == 'r_street') ? this.state.errorMessage : ''}
-										InputProps={{
-											inputProps: {
-												maxLength: 30
-											}
-										}}
-										placeholder="Rua 123"
-									/>
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										required
-										fullWidth
-										onChange={(e) => this.setState({r_number: e.target.value})}
-										margin="normal"
-										id="r_number"
-										label="Número"
-										value={this.state.r_number}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_number'}
-										helperText={(this.state.errorInput == 'r_number') ? this.state.errorMessage : ''}
-										InputProps={{
-											inputProps: {
-												maxLength: 10
-											}
-										}}
-										placeholder="456"
-									/>
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										fullWidth
-										onChange={(e) => this.setState({r_complement: e.target.value})}
-										margin="normal"
-										id="r_complement"
-										label="Complemento"
-										value={this.state.r_complement}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_complement'}
-										helperText={(this.state.errorInput == 'r_complement') ? this.state.errorMessage : ''}
-										InputProps={{
-											inputProps: {
-												maxLength: 30
-											}
-										}}
-										placeholder="Quadra 7 Lote 8..."
-									/>
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										fullWidth
-										onChange={(e) => this.setState({r_address_observation: e.target.value})}
-										margin="normal"
-										id="r_address_observation"
-										label="Observação"
-										value={this.state.r_address_observation}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_address_observation'}
-										helperText={(this.state.errorInput == 'r_address_observation') ? this.state.errorMessage : ''}
-										InputProps={{
-											inputProps: {
-												maxLength: 50
-											}
-										}}
-										placeholder="Deixar com o porteiro..."
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<Typography variant="h6" align="center">
-										Dados de Acesso
-									</Typography>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										required
-										fullWidth
-										onChange={(e) => this.setState({r_email: e.target.value})}
-										margin="normal"
-										id="r_email"
-										label="E-mail"
-										defaultValue={this.state.r_email}
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<AccountCircle />
-												</InputAdornment>
-											),
-											inputProps: {
-												maxLength: 254
-											}
-										}}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_email'}
-										helperText={(this.state.errorInput == 'r_email') ? this.state.errorMessage : ''}
-									/>
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										required
-										fullWidth
-										onChange={(e) => this.setState({r_password: e.target.value})}
-										margin="normal"
-										type="password"
-										id="r_password"
-										label="Senha"
-										defaultValue={this.state.r_password}
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<LockIcon />
-												</InputAdornment>
-											),
-											inputProps: {
-												maxLength: 15
-											}
-										}}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_password'}
-										helperText={(this.state.errorInput == 'r_password') ? this.state.errorMessage : ''}
-										autoComplete="new-password"
-									/>
-								</Grid>
-								<Grid item xs={6}>
-									<TextField
-										required
-										fullWidth
-										onChange={(e) => this.setState({r_password_confirm: e.target.value})}
-										margin="normal"
-										type="password"
-										id="r_password_confirm"
-										label="Confirmação de Senha"
-										defaultValue={this.state.r_password_confirm}
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<LockIcon />
-												</InputAdornment>
-											),
-											inputProps: {
-												maxLength: 15
-											}
-										}}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_password_confirm'}
-										helperText={(this.state.errorInput == 'r_password_confirm') ? this.state.errorMessage : ''}
-										autoComplete="new-password"
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<Typography variant="h6" align="center">
-										Recuperação de Conta
-									</Typography>
-								</Grid>
-								<Grid item xs={12} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-									{(secretQuestionsLoaded) ?
-										<Autocomplete
-											id="r_secret_question"
-											fullWidth
-											value={this.state.r_secret_question}
-											onChange={(e, newValue) => this.setState({r_secret_question: newValue})}
-											options={this.props.secretQuestions}
-											getOptionLabel={(secretQuestion) => secretQuestion.question}
-											disabled={this.state.trying}
-											renderInput={(params) => <TextField {...params} error={this.state.errorInput == 'r_secret_question'} helperText={(this.state.errorInput == 'r_secret_question') ? this.state.errorMessage : ''} required margin="normal" label="Pergunta Secreta" />}
-										/>
-										: <CircularProgress color="primary"/>}
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										required
-										fullWidth
-										onChange={(e) => this.setState({r_secret_answer: e.target.value})}
-										margin="normal"
-										id="r_secret_answer"
-										label="Resposta Secreta"
-										value={this.state.r_secret_answer}
-										disabled={this.state.trying}
-										error={this.state.errorInput == 'r_secret_answer'}
-										helperText={(this.state.errorInput == 'r_secret_answer') ? this.state.errorMessage : ''}
-										InputProps={{
-											inputProps: {
-												maxLength: 15
-											}
-										}}
-										placeholder=""
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControlLabel
-										value={this.state.r_agree}
-										onChange={(e, newValue) => this.setState({r_agree: newValue})}
-										control={<Checkbox color="primary" checked={this.state.r_agree}/>}
-										label="Lí e concordo com os Termos de Uso*"
-										labelPlacement="start"
-										disabled={this.state.trying}
-									/>
-								</Grid>
-								{(this.state.errorInput == 'r_agree') ?
-									<Grid item xs={12}>
-										<Alert severity="error">
-											<AlertTitle>{this.state.errorMessage}</AlertTitle>
-										</Alert>
-									</Grid> : ''}
-								<Grid item xs={12}>
-									<FormControlLabel
-										value={this.state.r_allow_email}
-										onChange={(e, newValue) => this.setState({r_allow_email: newValue})}
-										control={<Checkbox color="primary" checked={this.state.r_allow_email} />}
-										label="Aceito receber promoções e avisos por E-mail"
-										labelPlacement="start"
-										disabled={this.state.trying}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<FormControlLabel
-										value={this.state.r_allow_whatsapp}
-										onChange={(e, newValue) => this.setState({r_allow_whatsapp: newValue})}
-										control={<Checkbox color="primary" checked={this.state.r_allow_whatsapp}/>}
-										label="Aceito receber promoções e avisos pelo Whatsapp"
-										labelPlacement="start"
-										disabled={this.state.trying}
-									/>
-								</Grid>
-								{(this.state.errorInput == 'r_unexpected') ?
-									<Grid item xs={12}>
-										<Alert severity="error">
-											<AlertTitle>{this.state.errorMessage}</AlertTitle>
-										</Alert>
-									</Grid> : ''}
-							</Grid>
-							<input type="submit" style={{display: 'none'}}/>
-						</form>
-					</div> : ''}*/}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={this.handleDialogClose} disabled={this.state.trying}>

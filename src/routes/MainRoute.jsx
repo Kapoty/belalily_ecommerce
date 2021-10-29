@@ -54,10 +54,10 @@ export default class MainRoute extends React.Component {
 			blockedPopup: false, blockedPopupPass: '03213', blockedPopupPassTry: '',
 			categories: [],
 			products: [],
-			sizes: {},
-			cities: {},
-			districts: [],
-			secretQuestions: [],
+			sizes: {}, sizesById: {},
+			cities: {}, citiesById: {},
+			districts: [], districtsById: {},
+			secretQuestions: [], secretQuestionsById: {},
 			filter: {order: 1, sizes: []}, filterDialogOpened: false,
 			bag: {products: []},
 			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
@@ -149,9 +149,9 @@ export default class MainRoute extends React.Component {
 			if (resp.status != 200)
 				setTimeout(this.getSizesList, 5000);
 			else resp.json().then((data) => {
-				let sizes = {}
-				data.sizes.forEach((size) => sizes[size.id] = {name: size.name})
-				this.setState({sizes: sizes});
+				let sizesById = {}
+				data.sizes.forEach((size) => sizesById[size.id] = {name: size.name})
+				this.setState({sizes: data.sizes, sizesById: sizesById});
 			})
 		})
 		.catch((e) => {
@@ -168,9 +168,9 @@ export default class MainRoute extends React.Component {
 			if (resp.status != 200)
 				setTimeout(this.getCitiesList, 5000);
 			else resp.json().then((data) => {
-				let cities = {}
-				data.cities.forEach((city) => cities[city.id] = {name: city.name, uf: city.uf})
-				this.setState({cities: cities});
+				let citiesById = {}
+				data.cities.forEach((city) => citiesById[city.id] = city);
+				this.setState({cities: data.cities, citiesById: citiesById});
 			})
 		})
 		.catch((e) => {
@@ -187,7 +187,9 @@ export default class MainRoute extends React.Component {
 			if (resp.status != 200)
 				setTimeout(this.getDistrictsList, 5000);
 			else resp.json().then((data) => {
-				this.setState({districts: data.districts});
+				let districtsById = {}
+				data.districts.forEach((district) => districtsById[district.id] = district);
+				this.setState({districts: data.districts, districtsById: districtsById});
 			})
 		})
 		.catch((e) => {
@@ -204,7 +206,9 @@ export default class MainRoute extends React.Component {
 			if (resp.status != 200)
 				setTimeout(this.getSecretQuestionsList, 5000);
 			else resp.json().then((data) => {
-				this.setState({secretQuestions: data.secret_questions});
+				let secretQuestionsById = {}
+				data.secret_questions.forEach((secretQuestion) => secretQuestionsById[secretQuestion.id] = secretQuestion);
+				this.setState({secretQuestions: data.secret_questions, secretQuestionsById: secretQuestionsById});
 			})
 		})
 		.catch((e) => {
@@ -440,25 +444,28 @@ export default class MainRoute extends React.Component {
 	}
 
 	render() {
-		if (this.props.location.pathname == '/sacola' || this.props.location.pathname == '/')
+		if (this.props.location.pathname == '/sacola' || this.props.location.pathname == '/' || this.props.location.pathname == '/favoritos')
 			this.state.lastPage = this.props.location.pathname ;
 
 		return <React.Fragment>
 			<ThemeProvider theme={theme}>
 				{(this.state.blockedPopup) ? <BlockedPopup blockedClick={this.blockedClick} /> : '' }
 				<CustomAppBar history={this.props.history} auth={this.state.auth} customerLogout={this.customerLogout}/>
-				<div style={{display: (this.state.lastPage!='/sacola') ? 'block' : 'none'}}>
+				<div style={{display: (this.state.lastPage=='/') ? 'block' : 'none'}}>
 					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1} />
 				</div>
-				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
-					<Bag history={this.props.history} bag={this.state.bag} sizes={this.state.sizes} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
+				<div style={{display: (this.state.lastPage=='/favoritos') ? 'block' : 'none'}}>
+					Favoritos aqui
 				</div>
-				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
+				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
+					<Bag history={this.props.history} bag={this.state.bag} sizesById={this.state.sizesById} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
+				</div>
+				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length} auth={this.state.auth}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
-				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} cities={this.state.cities} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
-				<ProfileDialog auth={this.state.auth} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} cities={this.state.cities} districts={this.state.districts} secretQuestions={this.state.secretQuestions} customerInfo={this.state.customerInfo}/>
-				<ProductDialog sizes={this.state.sizes} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
-				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizes={this.state.sizes}/>
+				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
+				<ProfileDialog auth={this.state.auth} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} secretQuestions={this.state.secretQuestions} secretQuestionsById={this.state.secretQuestionsById} customerInfo={this.state.customerInfo}/>
+				<ProductDialog sizesById={this.state.sizesById} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizesById={this.state.sizesById}/>
 				<Snackbar
 					autoHideDuration={2000} 
 					open={this.state.addedToBag}
