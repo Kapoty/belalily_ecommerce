@@ -93,7 +93,8 @@ class Bag extends React.Component {
 									<BagProduct key={product.id+'-'+product.sizeId} product={product} sizesById={this.props.sizesById}
 									increaseProductFromBag={this.props.increaseProductFromBag}
 									decreaseProductFromBag={this.props.decreaseProductFromBag}
-									deleteProductFromBag={this.props.deleteProductFromBag}/>)}
+									deleteProductFromBag={this.props.deleteProductFromBag}
+									history={this.props.history}/>)}
 							</div>
 							<div className={classes.actionsContainer}>
 								<div>

@@ -30,7 +30,7 @@ class BottomNav extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
-		this.pages = ['/', '/favoritos', '/sacola'];
+		this.pages = ['/', '/desejos', '/sacola'];
 	}
 
 	render() {
@@ -42,10 +42,7 @@ class BottomNav extends React.Component {
 					this.props.history.push('/');
 				break;
 				case 1:
-					if (this.props.auth)
-						this.props.history.push('/favoritos');
-					else
-						this.props.history.push('/entrar');
+						this.props.history.push('/desejos');
 				break;
 				case 2:
 					this.props.history.push('/sacola');
@@ -53,7 +50,7 @@ class BottomNav extends React.Component {
 				}
 			}} showLabels className={classes.root}>
 			<BottomNavigationAction label="Catálogo" icon={<PhotoAlbumIcon />} />
-			<BottomNavigationAction label="Favoritos" icon={<FavoriteIcon />} />
+			<BottomNavigationAction label="Desejos" icon={<FavoriteIcon />} />
 			<BottomNavigationAction label="Sacola" icon={<StyledBadge badgeContent={this.props.bagQnt} color="primary">
 														<LocalMallIcon />
 														</StyledBadge>}

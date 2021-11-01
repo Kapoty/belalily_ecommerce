@@ -132,6 +132,7 @@ class ProductDialog extends React.Component {
 		this.removeQnt = this.removeQnt.bind(this);
 		this.getProduct = this.getProduct.bind(this);
 		this.getProductQuantity = this.getProductQuantity.bind(this);
+		this.handleAddToWishlist = this.handleAddToWishlist.bind(this);
 	}
 
 	getProduct() {
@@ -179,6 +180,12 @@ class ProductDialog extends React.Component {
 		this.props.history.push(this.props.lastPage);
 	}
 
+	handleAddToWishlist() {
+		if (this.props.auth)
+			this.props.addProductToCustomerWishlist(this.state.product.name, this.state.product.id, this.state.selectedSize);
+		else this.props.history.push('/entrar');
+	}
+
 	openImage(img) {
 		this.setState({imageOpen: true, image: img});
 	}
@@ -214,6 +221,7 @@ class ProductDialog extends React.Component {
 			if (this.state.dialogOpen == false) {
 				this.state.product = {};
 				this.state.availableQuantity = -1;
+				this.state.desiredQuantity = 0;
 				this.state.selectedSize = 0;
 				this.state.productId = this.props.location.pathname.match(/(?<=\/p\/)[\d]+/)[0];
 				this.getProduct();
@@ -285,6 +293,7 @@ class ProductDialog extends React.Component {
 							}
 						</div>
 					</div>
+					{(this.state.availableQuantity > 0) ?
 					<div className={classes.desiredQuantitySection}>
 						<IconButton aria-label="close" onClick={this.removeQnt} disabled={!productLoaded || this.state.desiredQuantity <= 1}>
 							<RemoveCircleIcon />
@@ -295,7 +304,7 @@ class ProductDialog extends React.Component {
 						<IconButton aria-label="close" onClick={this.addQnt} disabled={!productLoaded || this.state.selectedSize == 0 || this.state.availableQuantity == -1 || this.state.desiredQuantity >= this.state.availableQuantity}>
 							<AddCircleIcon />
 						</IconButton>
-					</div>
+					</div> : ''}
 					{(this.state.availableQuantity != -1) ?
 					<div className={classes.availableQuantitySection}>
 						<Typography variant="body2" color="primary" component="p" align="center">
@@ -313,8 +322,11 @@ class ProductDialog extends React.Component {
 					<Button onClick={this.handleKnowMore}>
 						Saiba Mais
 					</Button>
+					<Button onClick={this.handleAddToWishlist} disabled={!productLoaded || this.state.selectedSize == 0}>
+						Favoritar
+					</Button>
 					<Button onClick={this.handleAddToBag} color="primary" disabled={!productLoaded || this.state.desiredQuantity == 0}>
-						Adicionar à sacola
+						Comprar
 					</Button>
 				</DialogActions>
 				</Dialog>

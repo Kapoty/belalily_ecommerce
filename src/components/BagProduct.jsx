@@ -85,7 +85,7 @@ class BagProduct extends React.Component {
 		let sizesLoaded = !(Object.keys(this.props.sizesById).length === 0);
 
 		return <React.Fragment>
-			<Card className={classes.root}>
+			<Card className={classes.root} onClick={() => this.props.history.push('/p/' + this.props.product.id)}>
 				<CardActionArea>
 					<CardMedia
 					className={classes.media}
@@ -105,13 +105,13 @@ class BagProduct extends React.Component {
 							</div>
 						</div>
 						<div className={classes.qntSection}>
-							<IconButton aria-label="close" onClick={() => this.props.decreaseProductFromBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity == 1}>
+							<IconButton aria-label="close" onClick={(e) => {e.stopPropagation();this.props.decreaseProductFromBag(this.props.product.id, this.props.product.sizeId, 1)}} disabled={this.props.product.desiredQuantity == 1}>
 								<RemoveCircleIcon />
 							</IconButton>
 							<Typography className={classes.qntLabel} variant="h6" color="primary" component="p" align="center">
 								{this.props.product.desiredQuantity}
 							</Typography>
-							<IconButton aria-label="close" onClick={() => this.props.increaseProductFromBag(this.props.product.id, this.props.product.sizeId, 1)} disabled={this.props.product.desiredQuantity >= this.props.product.availableQuantity}>
+							<IconButton aria-label="close" onClick={(e) => {e.stopPropagation();this.props.increaseProductFromBag(this.props.product.id, this.props.product.sizeId, 1)}} disabled={this.props.product.desiredQuantity >= this.props.product.availableQuantity}>
 								<AddCircleIcon />
 							</IconButton>
 						</div>
@@ -125,7 +125,7 @@ class BagProduct extends React.Component {
 							</Alert> : ''
 						}
 						<div className={classes.removeSection}>
-							<IconButton aria-label="close" onClick={() => this.props.deleteProductFromBag(this.props.product.id, this.props.product.sizeId)}>
+							<IconButton aria-label="close" onClick={(e) => {e.stopPropagation();this.props.deleteProductFromBag(this.props.product.id, this.props.product.sizeId, this.props.product.availableQuantity == 0, this.props.product.name)}}>
 								<DeleteIcon />
 							</IconButton>
 						</div>

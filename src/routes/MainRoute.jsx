@@ -22,6 +22,7 @@ import BlockedPopup from '../components/BlockedPopup';
 import BagFixedDialog from '../components/BagFixedDialog';
 import LoginDialog from '../components/LoginDialog';
 import ProfileDialog from '../components/ProfileDialog';
+import Wishlist from '../components/Wishlist';
 
 import * as ls from 'local-storage';
 
@@ -63,6 +64,8 @@ export default class MainRoute extends React.Component {
 			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
 			customerToken: null, auth: false, customerInfo: {}, 
 			consultant_code: '',
+			customerWishlist: [],
+			addedToWishlist: false, addedToWishlistInfo: {name: ''},
 		}
 
 		this.closeCookiesDialog = this.closeCookiesDialog.bind(this);
@@ -90,6 +93,10 @@ export default class MainRoute extends React.Component {
 		this.customerLogout = this.customerLogout.bind(this);
 		this.customerLogin = this.customerLogin.bind(this);
 		this.loadConsultantCode = this.loadConsultantCode.bind(this);
+		this.getCustomerWishlist = this.getCustomerWishlist.bind(this);
+		this.addProductToCustomerWishlist = this.addProductToCustomerWishlist.bind(this);
+		this.deleteProductFromCustomerWishlist = this.deleteProductFromCustomerWishlist.bind(this);
+		this.closeAddToWishlist = this.closeAddToWishlist.bind(this);
 	}
 
 	componentDidMount() {
@@ -101,6 +108,7 @@ export default class MainRoute extends React.Component {
 		this.getSecretQuestionsList();
 		this.loadBagProductsFromStorage();
 		this.getCustomerInfo();
+		this.getCustomerWishlist();
 		this.loadConsultantCode();
 	}
 
@@ -256,6 +264,75 @@ export default class MainRoute extends React.Component {
 	customerLogin(customerToken) {
 		cookies.set('customer-token', customerToken);
 		this.getCustomerInfo();
+		this.getCustomerWishlist();
+	}
+
+	/* Favorites */
+
+	getCustomerWishlist() {
+		fetch(Config.apiURL + "customers/me/wishlist", {
+			method: "GET",
+			headers: { 
+				"Content-type": "application/json; charset=UTF-8",
+				"x-customer-token": this.state.customerToken,
+			} 
+		})
+		.then((resp) => {
+			resp.json().then((data) => {
+				if (!('error' in data || 'auth' in data))
+					this.setState({auth: true, customerWishlist: data.wishlist});
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getCustomerWishlist, 5000);
+			console.log(e);
+		});
+	}
+
+	addProductToCustomerWishlist(productName, productId, sizeId) {
+		fetch(Config.apiURL + "customers/me/wishlist", {
+			method: "POST",
+			body: JSON.stringify({productId: productId, sizeId: sizeId}),
+			headers: { 
+				"Content-type": "application/json; charset=UTF-8",
+				"x-customer-token": this.state.customerToken,
+			} 
+		})
+		.then((resp) => {
+			resp.json().then((data) => {
+				if (!('error' in data || 'auth' in data)) {
+					this.setState({addedToWishlist: true, addedToWishlistInfo: {name: productName}});
+					this.getCustomerWishlist();
+				}
+			})
+		})
+		.catch((e) => {
+			console.log(e);
+		});
+	}
+
+	deleteProductFromCustomerWishlist(productId, sizeId) {
+		fetch(Config.apiURL + "customers/me/wishlist", {
+			method: "DELETE",
+			body: JSON.stringify({productId: productId, sizeId: sizeId}),
+			headers: { 
+				"Content-type": "application/json; charset=UTF-8",
+				"x-customer-token": this.state.customerToken,
+			} 
+		})
+		.then((resp) => {
+			resp.json().then((data) => {
+				if (!('error' in data))
+					this.getCustomerWishlist();
+			})
+		})
+		.catch((e) => {
+			console.log(e);
+		});
+	}
+
+	closeAddToWishlist() {
+		this.setState({addedToWishlist: false});
 	}
 
 	/* Cookies' Dialog */
@@ -353,7 +430,11 @@ export default class MainRoute extends React.Component {
 			}
 	}
 
-	deleteProductFromBag(productId, sizeId) {
+	deleteProductFromBag(productId, sizeId, addToCustomerWishlist, productName) {
+		if (addToCustomerWishlist && this.state.auth) {
+			this.addProductToCustomerWishlist(productName, productId, sizeId);
+		}
+
 		let number_of_products = this.state.bag.products.length;
 		for (let i=0; i<number_of_products; i++)
 			if (this.state.bag.products[i].id == productId && this.state.bag.products[i].sizeId == sizeId) {
@@ -444,7 +525,7 @@ export default class MainRoute extends React.Component {
 	}
 
 	render() {
-		if (this.props.location.pathname == '/sacola' || this.props.location.pathname == '/' || this.props.location.pathname == '/favoritos')
+		if (this.props.location.pathname == '/sacola' || this.props.location.pathname == '/' || this.props.location.pathname == '/desejos')
 			this.state.lastPage = this.props.location.pathname ;
 
 		return <React.Fragment>
@@ -454,17 +535,17 @@ export default class MainRoute extends React.Component {
 				<div style={{display: (this.state.lastPage=='/') ? 'block' : 'none'}}>
 					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1} />
 				</div>
-				<div style={{display: (this.state.lastPage=='/favoritos') ? 'block' : 'none'}}>
-					Favoritos aqui
+				<div style={{display: (this.state.lastPage=='/desejos') ? 'block' : 'none'}}>
+					<Wishlist auth={this.state.auth} favorites={this.state.wishlist} history={this.props.history} customerWishlist={this.state.customerWishlist} sizesById={this.state.sizesById} deleteProductFromCustomerWishlist={this.deleteProductFromCustomerWishlist}/>
 				</div>
 				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
 					<Bag history={this.props.history} bag={this.state.bag} sizesById={this.state.sizesById} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
 				</div>
-				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length} auth={this.state.auth}/>
+				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
 				<ProfileDialog auth={this.state.auth} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} secretQuestions={this.state.secretQuestions} secretQuestionsById={this.state.secretQuestionsById} customerInfo={this.state.customerInfo}/>
-				<ProductDialog sizesById={this.state.sizesById} addProductToBag={this.addProductToBag} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<ProductDialog auth={this.state.auth} sizesById={this.state.sizesById} addProductToBag={this.addProductToBag} addProductToCustomerWishlist={this.addProductToCustomerWishlist} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizesById={this.state.sizesById}/>
 				<Snackbar
 					autoHideDuration={2000} 
@@ -472,6 +553,13 @@ export default class MainRoute extends React.Component {
 					onClose={this.closeAddToBag}
 					TransitionComponent={Transition}
 					message={`${this.state.addedToBagInfo.quantity}x ${this.state.addedToBagInfo.name} ${(this.state.addedToBagInfo.qnt == 1)?'foi adicionada':'foram adicionadas'} à sua sacola!`}
+				/>
+				<Snackbar
+					autoHideDuration={2000} 
+					open={this.state.addedToWishlist}
+					onClose={this.closeAddToWishlist}
+					TransitionComponent={Transition}
+					message={`${this.state.addedToWishlistInfo.name} foi adicionada à sua lista de desejos!`}
 				/>
 				<CookiesDialog open={this.state.cookiesDialogOpened} history={this.props.history} closeCookiesDialog={this.closeCookiesDialog}/>
 			</ThemeProvider>
