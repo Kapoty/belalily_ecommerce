@@ -19,6 +19,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import Config from "../config/Config";
+import {toBRL} from '../util/Currency';
 
 const useStyles = (theme) => ({
 	root: {
@@ -97,7 +98,10 @@ class BagProduct extends React.Component {
 							{this.props.product.name}
 						</Typography>
 						<Typography variant="h6" color="primary" component="p" align="center">
-							R$ {this.props.product.price * this.props.product.desiredQuantity}
+							{toBRL(this.props.product.price_in_cash * this.props.product.desiredQuantity)}
+						</Typography>
+						<Typography variant="subtitle2" component="p" align="center" color="textSecondary">
+							à vista no PIX
 						</Typography>
 						<div className={classes.sizeSection}>
 							<div className={classes.sizeOptions}>

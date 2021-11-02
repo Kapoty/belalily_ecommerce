@@ -60,12 +60,13 @@ export default class MainRoute extends React.Component {
 			districts: [], districtsById: {},
 			secretQuestions: [], secretQuestionsById: {},
 			filter: {order: 1, sizes: []}, filterDialogOpened: false,
-			bag: {products: []},
+			bag: {products: [], limit: 10, step: 0},
 			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
 			customerToken: null, auth: false, customerInfo: {}, 
 			consultant_code: '',
 			customerWishlist: [],
 			addedToWishlist: false, addedToWishlistInfo: {name: ''},
+			customerPreOrder: null,
 		}
 
 		this.closeCookiesDialog = this.closeCookiesDialog.bind(this);
@@ -97,6 +98,8 @@ export default class MainRoute extends React.Component {
 		this.addProductToCustomerWishlist = this.addProductToCustomerWishlist.bind(this);
 		this.deleteProductFromCustomerWishlist = this.deleteProductFromCustomerWishlist.bind(this);
 		this.closeAddToWishlist = this.closeAddToWishlist.bind(this);
+		this.getCustomerPreOrder = this.getCustomerPreOrder.bind(this);
+		this.setBagStep = this.setBagStep.bind(this);
 	}
 
 	componentDidMount() {
@@ -109,6 +112,7 @@ export default class MainRoute extends React.Component {
 		this.loadBagProductsFromStorage();
 		this.getCustomerInfo();
 		this.getCustomerWishlist();
+		this.getCustomerPreOrder();
 		this.loadConsultantCode();
 	}
 
@@ -280,7 +284,7 @@ export default class MainRoute extends React.Component {
 		.then((resp) => {
 			resp.json().then((data) => {
 				if (!('error' in data || 'auth' in data))
-					this.setState({auth: true, customerWishlist: data.wishlist});
+					this.setState({customerWishlist: data.wishlist});
 			})
 		})
 		.catch((e) => {
@@ -335,6 +339,28 @@ export default class MainRoute extends React.Component {
 		this.setState({addedToWishlist: false});
 	}
 
+	/* Pre Order */
+
+	getCustomerPreOrder() {
+		fetch(Config.apiURL + "customers/me/pre-order", {
+			method: "GET",
+			headers: { 
+				"Content-type": "application/json; charset=UTF-8",
+				"x-customer-token": this.state.customerToken,
+			} 
+		})
+		.then((resp) => {
+			resp.json().then((data) => {
+				if (!('error' in data || 'auth' in data))
+					this.setState({customerPreOrder: data.preOrder});
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getCustomerPreOrder, 5000);
+			console.log(e);
+		});
+	}
+
 	/* Cookies' Dialog */
 
 	closeCookiesDialog() {
@@ -386,6 +412,7 @@ export default class MainRoute extends React.Component {
 			id: product.id,
 			name: product.name,
 			price: product.price,
+			price_in_cash: product.price_in_cash,
 			desiredQuantity: desiredQuantity,
 			availableQuantity: availableQuantity,
 			sizeId: sizeId,
@@ -464,6 +491,7 @@ export default class MainRoute extends React.Component {
 					if (this.state.bag.products[i].id == product.id && this.state.bag.products[i].sizeId == product.sizeId) {
 						this.state.bag.products[i].name = data.product.name;
 						this.state.bag.products[i].price = data.product.price;
+						this.state.bag.products[i].price_in_cash = data.product.price_in_cash;
 						this.state.bag.products[i].img_number = data.product.img_number;
 						this.forceUpdate();
 					}
@@ -513,6 +541,11 @@ export default class MainRoute extends React.Component {
 		this.setState({addedToBag: false});
 	}
 
+	setBagStep(step) {
+		this.state.bag.step = step;
+		this.forceUpdate();
+	}
+
 	/* Consultant */
 
 	loadConsultantCode() {
@@ -539,7 +572,7 @@ export default class MainRoute extends React.Component {
 					<Wishlist auth={this.state.auth} favorites={this.state.wishlist} history={this.props.history} customerWishlist={this.state.customerWishlist} sizesById={this.state.sizesById} deleteProductFromCustomerWishlist={this.deleteProductFromCustomerWishlist}/>
 				</div>
 				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
-					<Bag history={this.props.history} bag={this.state.bag} sizesById={this.state.sizesById} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
+					<Bag customerPreOrder={this.state.customerPreOrder} setBagStep={this.setBagStep} history={this.props.history} bag={this.state.bag} sizesById={this.state.sizesById} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
 				</div>
 				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>

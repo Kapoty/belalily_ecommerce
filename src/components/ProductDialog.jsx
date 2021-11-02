@@ -22,6 +22,7 @@ import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Config from "../config/Config";
+import {toBRL} from '../util/Currency';
 
 const useStyles = (theme) => ({
 	root: {
@@ -278,9 +279,20 @@ class ProductDialog extends React.Component {
 						</React.Fragment> : ''}
 					</div>
 					<div className={classes.priceSection}>
-						<Typography variant="h6" color="primary" component="p" align="center">
-							R$ {(productLoaded) ? this.state.product.price : '??.??'}
-						</Typography>
+						
+							{(productLoaded) ? <React.Fragment>
+								<Typography variant="h4" color="primary" component="p" align="center">
+									<b>{toBRL(this.state.product.price_in_cash)}</b>
+								</Typography>
+								<Typography variant="subtitle2" component="p" align="center" color="textSecondary" gutterBottom>
+									à vista no PIX com até <b>5% OFF</b>
+								</Typography>
+								<Typography variant="h6" color="textPrimary" component="p" align="center">
+									ou {toBRL(this.state.product.price)}
+								</Typography>
+							</React.Fragment> :
+							<Typography variant="h4" color="primary" component="p" align="center"><b>R$ ??.??</b></Typography>}
+						
 					</div>
 					<div className={classes.sizeSection}>
 						<Typography gutterBottom align="center" variant="body1">

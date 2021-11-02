@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import Config from "../config/Config";
+import {toBRL} from '../util/Currency';
 
 const useStyles = (theme) => ({
 	root: {
@@ -53,8 +54,12 @@ class Product extends React.Component {
 							{this.props.product.name}
 						</Typography>
 						<Typography variant="h6" color="primary" component="p" align="center">
-							R$ {this.props.product.price}
+							{toBRL(this.props.product.price_in_cash)}
 						</Typography>
+						<Typography variant="subtitle2" component="p" align="center" color="textSecondary">
+							à vista no PIX
+						</Typography>
+						
 					</CardContent>
 				</CardActionArea>
 			</Card>
