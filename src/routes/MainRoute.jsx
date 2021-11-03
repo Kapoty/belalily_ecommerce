@@ -24,6 +24,8 @@ import LoginDialog from '../components/LoginDialog';
 import ProfileDialog from '../components/ProfileDialog';
 import Wishlist from '../components/Wishlist';
 
+import {toBRL} from '../util/Currency';
+
 import * as ls from 'local-storage';
 
 import queryString from 'query-string';
@@ -60,13 +62,12 @@ export default class MainRoute extends React.Component {
 			districts: [], districtsById: {},
 			secretQuestions: [], secretQuestionsById: {},
 			filter: {order: 1, sizes: []}, filterDialogOpened: false,
-			bag: {products: [], limit: 10, step: 0},
+			bag: {products: [], limit: 10, step: 0, shippingType: '', preOrder: {}, orderErrorMessage: ''},
 			addedToBag: false, addedToBagInfo: {name: '', quantity: ''},
 			customerToken: null, auth: false, customerInfo: {}, 
 			consultant_code: '',
 			customerWishlist: [],
 			addedToWishlist: false, addedToWishlistInfo: {name: ''},
-			customerPreOrder: null,
 		}
 
 		this.closeCookiesDialog = this.closeCookiesDialog.bind(this);
@@ -98,8 +99,11 @@ export default class MainRoute extends React.Component {
 		this.addProductToCustomerWishlist = this.addProductToCustomerWishlist.bind(this);
 		this.deleteProductFromCustomerWishlist = this.deleteProductFromCustomerWishlist.bind(this);
 		this.closeAddToWishlist = this.closeAddToWishlist.bind(this);
-		this.getCustomerPreOrder = this.getCustomerPreOrder.bind(this);
 		this.setBagStep = this.setBagStep.bind(this);
+		this.setBagShippingType = this.setBagShippingType.bind(this);
+		this.getPreOrder = this.getPreOrder.bind(this);
+		this.handleCouponSubmit = this.handleCouponSubmit.bind(this);
+		this.closeOrderErrorMessage = this.closeOrderErrorMessage.bind(this);
 	}
 
 	componentDidMount() {
@@ -112,13 +116,13 @@ export default class MainRoute extends React.Component {
 		this.loadBagProductsFromStorage();
 		this.getCustomerInfo();
 		this.getCustomerWishlist();
-		this.getCustomerPreOrder();
 		this.loadConsultantCode();
 	}
 
 	/* get data from API */
 
 	getCategoriesList() {
+		this.setState({categories: []});
 		fetch(Config.apiURL + "categories", {
 			method: "GET"
 		})
@@ -137,6 +141,7 @@ export default class MainRoute extends React.Component {
 	}
 
 	getProductsList() {
+		this.setState({products: []});
 		fetch(Config.apiURL + "products", {
 			method: "GET"
 		})
@@ -154,6 +159,7 @@ export default class MainRoute extends React.Component {
 	}
 
 	getSizesList() {
+		this.setState({sizes: {}, sizesById: {}});
 		fetch(Config.apiURL + "sizes", {
 			method: "GET"
 		})
@@ -173,6 +179,7 @@ export default class MainRoute extends React.Component {
 	}
 
 	getCitiesList() {
+		this.setState({cities: [], citiesById: {}});
 		fetch(Config.apiURL + "cities", {
 			method: "GET"
 		})
@@ -192,6 +199,7 @@ export default class MainRoute extends React.Component {
 	}
 
 	getDistrictsList() {
+		this.setState({districts: [], districtsById: {}});
 		fetch(Config.apiURL + "districts", {
 			method: "GET"
 		})
@@ -211,6 +219,7 @@ export default class MainRoute extends React.Component {
 	}
 
 	getSecretQuestionsList() {
+		this.setState({secretQuestions: [], secretQuestionsById: {}});
 		fetch(Config.apiURL + "secret-questions", {
 			method: "GET"
 		})
@@ -237,6 +246,7 @@ export default class MainRoute extends React.Component {
 			this.setState({auth: false});
 			return;
 		}
+		this.setState({customerInfo: {}});
 		fetch(Config.apiURL + "customers/me/info", {
 			method: "GET",
 			headers: { 
@@ -262,7 +272,8 @@ export default class MainRoute extends React.Component {
 
 	customerLogout() {
 		cookies.remove('customer-token');
-		this.setState({auth: false});
+		if (this.state.auth)
+			this.setState({auth: false});
 	}
 
 	customerLogin(customerToken) {
@@ -283,8 +294,12 @@ export default class MainRoute extends React.Component {
 		})
 		.then((resp) => {
 			resp.json().then((data) => {
-				if (!('error' in data || 'auth' in data))
+				if ('auth' in data)
+					return this.customerLogout();
+				if (!('error' in data))
 					this.setState({customerWishlist: data.wishlist});
+				else
+					setTimeout(this.getCustomerWishlist, 5000);
 			})
 		})
 		.catch((e) => {
@@ -304,7 +319,9 @@ export default class MainRoute extends React.Component {
 		})
 		.then((resp) => {
 			resp.json().then((data) => {
-				if (!('error' in data || 'auth' in data)) {
+				if ('auth' in data)
+					return this.customerLogout();
+				if (!('error' in data)) {
 					this.setState({addedToWishlist: true, addedToWishlistInfo: {name: productName}});
 					this.getCustomerWishlist();
 				}
@@ -326,6 +343,8 @@ export default class MainRoute extends React.Component {
 		})
 		.then((resp) => {
 			resp.json().then((data) => {
+				if ('auth' in data)
+					return this.customerLogout();
 				if (!('error' in data))
 					this.getCustomerWishlist();
 			})
@@ -337,28 +356,6 @@ export default class MainRoute extends React.Component {
 
 	closeAddToWishlist() {
 		this.setState({addedToWishlist: false});
-	}
-
-	/* Pre Order */
-
-	getCustomerPreOrder() {
-		fetch(Config.apiURL + "customers/me/pre-order", {
-			method: "GET",
-			headers: { 
-				"Content-type": "application/json; charset=UTF-8",
-				"x-customer-token": this.state.customerToken,
-			} 
-		})
-		.then((resp) => {
-			resp.json().then((data) => {
-				if (!('error' in data || 'auth' in data))
-					this.setState({customerPreOrder: data.preOrder});
-			})
-		})
-		.catch((e) => {
-			setTimeout(this.getCustomerPreOrder, 5000);
-			console.log(e);
-		});
 	}
 
 	/* Cookies' Dialog */
@@ -431,6 +428,7 @@ export default class MainRoute extends React.Component {
 			this.state.bag.products.push(bagProduct);
 		this.state.addedToBag = true; 
 		this.state.addedToBagInfo = {name: product.name, quantity: desiredQuantity};
+		this.state.bag.step = 0;
 		this.saveBagProductsToStorage();
 		this.forceUpdate();
 	}
@@ -542,8 +540,100 @@ export default class MainRoute extends React.Component {
 	}
 
 	setBagStep(step) {
-		this.state.bag.step = step;
-		this.forceUpdate();
+		if (step == 0) {
+			this.validateBagProducts();
+			this.setState({bag: {...this.state.bag, step: step}});
+		}
+		else if (step == 2) {
+			this.getCitiesList();
+			this.getDistrictsList();
+			this.getCustomerInfo();
+			this.setState({bag: {...this.state.bag, step: step, shippingType: ''}});
+		} else if (step == 3) {
+			this.state.bag.coupon = '';
+			this.state.bag.couponApplied = false;
+			this.state.bag.preOrder = {};
+			this.getPreOrder();
+			this.setState({bag: {...this.state.bag, step: step}});
+		}
+		else this.setState({bag: {...this.state.bag, step: step}});
+	}
+
+	setBagShippingType(type) {
+		this.setState({bag: {...this.state.bag, shippingType: type}})
+	}
+
+	handleCouponSubmit(couponCode) {
+		if (this.state.bag.preOrder.coupon_applied)
+			couponCode = '';
+		this.getPreOrder(true, couponCode);
+	}
+
+	getPreOrder(applyCoupon, couponCode) {
+		this.setState({bag: {...this.state.bag, preOrder: {}}});
+
+		let products = [];
+		this.state.bag.products.forEach((product) => products.push({
+			id: product.id,
+			size_id: product.sizeId,
+			desiredQuantity: product.desiredQuantity
+		}));
+
+		fetch(Config.apiURL + "orders/me/pre-order", {
+			method: "POST",
+			body: JSON.stringify({
+				products: products,
+				shipping_type: this.state.bag.shippingType,
+				coupon: (applyCoupon) ? couponCode : (this.state.bag.preOrder.coupon) ? this.state.bag.preOrder.coupon.code : '',
+			}),
+			headers: { 
+				"Content-type": "application/json; charset=UTF-8",
+				"x-customer-token": this.state.customerToken,
+			} 
+		})
+		.then((resp) => {
+			resp.json().then((data) => {
+				if ('auth' in data)
+					return this.customerLogout();
+				if (!('error' in data)) {
+					console.log(data);
+					switch(data.preOrder.coupon_error) {
+						case 'coupon invalid':
+							this.state.bag.orderErrorMessage = 'Cupom inválido';
+						break;
+						case 'coupon minimum amount not reached':
+							this.state.bag.orderErrorMessage = `Valor mínimo de ${toBRL(data.preOrder.coupon.minimum_amount)} não atingido`;
+						break;
+						case 'coupon maximum usage reached':
+							this.state.bag.orderErrorMessage = `Máximo de usos atingido`;
+						break;
+						case 'coupon maximum units exceeded':
+							this.state.bag.orderErrorMessage = `Unidades na sacola excede o limite de ${data.preOrder.coupon.max_units} unidades`;
+						break;
+					}
+					this.setState({bag: {...this.state.bag, preOrder: data.preOrder}});
+				} else {
+					switch(data.error) {
+						case 'products invalid':
+							this.state.bag.orderErrorMessage = 'Os valores apresentados estão desatualizados. Por favor, tente novamente.';
+							this.setBagStep(0);
+						break;
+						case 'shipping invalid':
+							this.state.bag.orderErrorMessage = 'Método de entrega inválido.';
+							this.setBagStep(2);
+						break;
+					}
+				}
+			})
+		})
+		.catch((e) => {
+			setTimeout(this.getCustomerWishlist, 5000);
+			console.log(e);
+		});
+	}
+
+	closeOrderErrorMessage() {
+		this.setState({bag: {...this.state.bag, orderErrorMessage: ''}});
 	}
 
 	/* Consultant */
@@ -572,12 +662,12 @@ export default class MainRoute extends React.Component {
 					<Wishlist auth={this.state.auth} favorites={this.state.wishlist} history={this.props.history} customerWishlist={this.state.customerWishlist} sizesById={this.state.sizesById} deleteProductFromCustomerWishlist={this.deleteProductFromCustomerWishlist}/>
 				</div>
 				<div style={{display: (this.state.lastPage=='/sacola') ? 'block' : 'none'}}>
-					<Bag customerPreOrder={this.state.customerPreOrder} setBagStep={this.setBagStep} history={this.props.history} bag={this.state.bag} sizesById={this.state.sizesById} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
+					<Bag handleCouponSubmit={this.handleCouponSubmit} setBagShippingType={this.setBagShippingType} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} customerInfo={this.state.customerInfo} setBagStep={this.setBagStep} auth={this.state.auth} history={this.props.history} bag={this.state.bag} sizesById={this.state.sizesById} increaseProductFromBag={this.increaseProductFromBag} decreaseProductFromBag={this.decreaseProductFromBag} deleteProductFromBag={this.deleteProductFromBag}/>
 				</div>
 				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
-				<ProfileDialog auth={this.state.auth} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} secretQuestions={this.state.secretQuestions} secretQuestionsById={this.state.secretQuestionsById} customerInfo={this.state.customerInfo}/>
+				<ProfileDialog auth={this.state.auth} customerLogin={this.customerLogout} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} secretQuestions={this.state.secretQuestions} secretQuestionsById={this.state.secretQuestionsById} customerInfo={this.state.customerInfo}/>
 				<ProductDialog auth={this.state.auth} sizesById={this.state.sizesById} addProductToBag={this.addProductToBag} addProductToCustomerWishlist={this.addProductToCustomerWishlist} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizesById={this.state.sizesById}/>
 				<Snackbar
@@ -593,6 +683,13 @@ export default class MainRoute extends React.Component {
 					onClose={this.closeAddToWishlist}
 					TransitionComponent={Transition}
 					message={`${this.state.addedToWishlistInfo.name} foi adicionada à sua lista de desejos!`}
+				/>
+				<Snackbar
+					autoHideDuration={2000} 
+					open={this.state.bag.orderErrorMessage != ''}
+					onClose={this.closeOrderErrorMessage}
+					TransitionComponent={Transition}
+					message={this.state.bag.orderErrorMessage}
 				/>
 				<CookiesDialog open={this.state.cookiesDialogOpened} history={this.props.history} closeCookiesDialog={this.closeCookiesDialog}/>
 			</ThemeProvider>

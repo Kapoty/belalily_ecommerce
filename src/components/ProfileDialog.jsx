@@ -203,6 +203,8 @@ class ProfileDialog extends React.Component {
 				})
 				.then((resp) => {
 					resp.json().then((data) => {
+						if ('auth' in data)
+							return this.props.customerLogout();
 						if ('error' in data) {
 							let input = '', message = '';
 							switch(data.error) {
@@ -270,6 +272,8 @@ class ProfileDialog extends React.Component {
 				})
 				.then((resp) => {
 					resp.json().then((data) => {
+						if ('auth' in data)
+							return this.props.customerLogout();
 						if ('error' in data) {
 							let input = '', message = '';
 							switch(data.error) {
@@ -342,6 +346,8 @@ class ProfileDialog extends React.Component {
 				})
 				.then((resp) => {
 					resp.json().then((data) => {
+						if ('auth' in data)
+							return this.props.customerLogout();
 						if ('error' in data) {
 							let input = '', message = '';
 							switch(data.error) {
@@ -409,6 +415,8 @@ class ProfileDialog extends React.Component {
 				})
 				.then((resp) => {
 					resp.json().then((data) => {
+						if ('auth' in data)
+							return this.props.customerLogout();
 						if ('error' in data) {
 							let input = '', message = '';
 							switch(data.error) {
@@ -460,6 +468,8 @@ class ProfileDialog extends React.Component {
 				})
 				.then((resp) => {
 					resp.json().then((data) => {
+						if ('auth' in data)
+							return this.props.customerLogout();
 						if ('error' in data) {
 							let input = '', message = '';
 							switch(data.error) {

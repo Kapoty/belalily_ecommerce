@@ -40,7 +40,7 @@
     </div>
     <script type="text/javascript">
       window.onerror = function (message, url, lineNo) {
-      		localStorage.clear();
+      		//localStorage.clear();
           document.getElementById("root").style.display = 'none';
       		document.getElementById("onError").style.display = 'flex';
       		document.querySelector("#onError .errorMessage").value = 'Error: ' + message + '\n' + 'Line Number: ' + lineNo;

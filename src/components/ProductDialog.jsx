@@ -288,7 +288,7 @@ class ProductDialog extends React.Component {
 									à vista no PIX com até <b>5% OFF</b>
 								</Typography>
 								<Typography variant="h6" color="textPrimary" component="p" align="center">
-									ou {toBRL(this.state.product.price)}
+									ou <b>{toBRL(this.state.product.price)}</b> em até 12x
 								</Typography>
 							</React.Fragment> :
 							<Typography variant="h4" color="primary" component="p" align="center"><b>R$ ??.??</b></Typography>}
@@ -300,7 +300,7 @@ class ProductDialog extends React.Component {
 						</Typography>
 						<div className={classes.sizeOptions}>
 							{(productLoaded && sizesLoaded && this.state.product.sizes != null) ? this.state.product.sizes.split(',').map((sizeId) => 
-								<Chip className={classes.sizeChip} label={this.props.sizesById[sizeId].name} key={sizeId} onClick={() => this.setSize(sizeId)} color={this.state.selectedSize == sizeId ? "primary" : 'default'}/>)
+								<Chip className={classes.sizeChip} label={this.props.sizesById[sizeId].name} key={sizeId} onClick={() => this.setSize(parseInt(sizeId))} color={this.state.selectedSize == sizeId ? "primary" : 'default'}/>)
 								: <CircularProgress color="primary"/>
 							}
 						</div>
