@@ -735,6 +735,7 @@ export default class MainRoute extends React.Component {
 			this.orderPayload.cardToken = this.state.pagseguro.cardToken;
 			this.orderPayload.installmentQuantity = this.state.pagseguro.cardInstallments[this.state.pagseguro.selectedInstallment-1].quantity;
 			this.orderPayload.installmentValue = this.state.pagseguro.cardInstallments[this.state.pagseguro.selectedInstallment-1].installmentAmount;
+			this.orderPayload.installmentTotalAmount = this.state.pagseguro.cardInstallments[this.state.pagseguro.selectedInstallment-1].totalAmount;
 		}
 
 		console.log(JSON.stringify(this.orderPayload));
@@ -786,7 +787,7 @@ export default class MainRoute extends React.Component {
 							this.setBagStep(3);
 						break;
 						default:
-							this.state.bag.orderErrorMessage = 'Erro inesperado. Por favor, tente novamente.';
+							this.state.bag.orderErrorMessage = 'Erro inesperado: '+data.error+'. Por favor, tente novamente.';
 							this.state.bag.creatingOrder = false;
 							this.setBagStep(3);
 					}
@@ -895,7 +896,7 @@ export default class MainRoute extends React.Component {
 			return;
 		PagSeguroDirectPayment.getInstallments({
 			amount: this.state.bag.preOrder.total,
-			maxInstallmentNoInterest: (this.state.bag.preOrder.total >= 100) ? 3 : 1,
+			maxInstallmentNoInterest: (this.state.bag.preOrder.total >= 100) ? 3 : undefined,
 			brand: this.state.pagseguro.cardBrand,
 			success: this.onPagseguroCardInstallmentsSuccess,
 			error: function(response) {

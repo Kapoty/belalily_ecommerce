@@ -133,6 +133,10 @@ const useStyles = (theme) => ({
 		marginTop: theme.spacing(1),
 		marginBottom: theme.spacing(1),
 	},
+	orderInfoCard: {
+		padding: theme.spacing(1),
+		marginTop: theme.spacing(1),
+	},
 });
 
 class Bag extends React.Component {
@@ -668,12 +672,32 @@ class Bag extends React.Component {
 						</StepContent>
 					</Step>
 					{(this.props.bag.step == 4) ? <Step key={4}>
-						<StepLabel>Acompanhe o seu pedido</StepLabel>
+						<StepLabel>Pedido realizado! :)</StepLabel>
 						<StepContent>
 							<Typography variant="h6" gutterBottom>
-									Pedido Realizado! :)
+									Informações
 							</Typography>
-							{JSON.stringify(this.props.bag.orderInfo)}
+							<Paper className={classes.orderInfoCard}>	
+									<Typography variant="body1" gutterBottom>
+										<b>Número do pedido</b>: {this.props.bag.orderInfo.order_id}<br/>
+										<b>Método de pagamento:</b> {{'PIX': 'PIX', 'BOLETO': 'BOLETO', 'CREDIT': `CARTÃO DE CRÉDITO (pagamento em ${this.props.bag.orderInfo.installmentQuantity}x)`}[this.props.bag.orderInfo.payment_method]}<br/>
+										<b>Valor</b>: {toBRL(this.props.bag.orderInfo.total)}<br/>
+										<br/>
+										{(this.props.bag.orderInfo.payment_method == 'PIX') ? <React.Fragment>
+											Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br
+										</React.Fragment> : ''}
+										{(this.props.bag.orderInfo.payment_method == 'BOLETO') ? <React.Fragment>
+											Confirmação do pagamento em até 3 dias úteis.<br/><br/>
+											<a href={this.props.bag.orderInfo.payment_boleto_link} target='_blank'>Clique aqui para visualizar o boleto</a>
+										</React.Fragment> : ''}
+										{(this.props.bag.orderInfo.payment_method == 'CREDIT') ? <React.Fragment>
+											Confirmação do pagamento em até 2 dias úteis.<br/>
+											(geralmente é confirmado dentro de 1 hora)
+										</React.Fragment> : ''}
+										<br/><br/>
+										Você pode acompanhar o status do seu pedido em <a href='#'>Meus pedidos</a>
+									</Typography>
+							</Paper>
 							<br/>
 							<Button
 								className={classes.button}
