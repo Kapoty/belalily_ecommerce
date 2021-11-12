@@ -22,6 +22,7 @@ import BlockedPopup from '../components/BlockedPopup';
 import BagFixedDialog from '../components/BagFixedDialog';
 import LoginDialog from '../components/LoginDialog';
 import ProfileDialog from '../components/ProfileDialog';
+import OrdersDialog from '../components/OrdersDialog';
 import Wishlist from '../components/Wishlist';
 
 import {toBRL} from '../util/Currency';
@@ -991,7 +992,8 @@ export default class MainRoute extends React.Component {
 				<BottomNav lastPage={this.state.lastPage} location={this.props.location} history={this.props.history} bagQnt={this.state.bag.products.length}/>
 				<InternalPage location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<LoginDialog auth={this.state.auth} customerLogin={this.customerLogin} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} secretQuestions={this.state.secretQuestions} consultant_code={this.state.consultant_code}/>
-				<ProfileDialog auth={this.state.auth} customerLogin={this.customerLogout} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} secretQuestions={this.state.secretQuestions} secretQuestionsById={this.state.secretQuestionsById} customerInfo={this.state.customerInfo}/>
+				<OrdersDialog auth={this.state.auth} customerLogout={this.customerLogout} customerToken={this.state.customerToken}  location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
+				<ProfileDialog auth={this.state.auth} customerLogout={this.customerLogout} customerToken={this.state.customerToken} getCustomerInfo={this.getCustomerInfo} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage} citiesById={this.state.citiesById} districts={this.state.districts} districtsById={this.state.districtsById} secretQuestions={this.state.secretQuestions} secretQuestionsById={this.state.secretQuestionsById} customerInfo={this.state.customerInfo}/>
 				<ProductDialog auth={this.state.auth} sizesById={this.state.sizesById} addProductToBag={this.addProductToBag} addProductToCustomerWishlist={this.addProductToCustomerWishlist} location={this.props.location} history={this.props.history} lastPage={this.state.lastPage}/>
 				<FilterDialog open={this.state.filterDialogOpened} filter={this.state.filter} setFilter={this.setFilter} closeFilter={this.closeFilter} sizesById={this.state.sizesById}/>
 				<Snackbar

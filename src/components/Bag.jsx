@@ -24,6 +24,7 @@ import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Link from '@material-ui/core/Link';
 
 import {toBRL} from '../util/Currency';
 import {toCEP} from '../util/Cep';
@@ -132,11 +133,19 @@ const useStyles = (theme) => ({
 		alignItems: 'center',
 		marginTop: theme.spacing(1),
 		marginBottom: theme.spacing(1),
+		flexWrap: 'wrap',
+		'& img': {
+			margin: theme.spacing(0.5), 
+		}
 	},
 	orderInfoCard: {
 		padding: theme.spacing(1),
 		marginTop: theme.spacing(1),
 	},
+	pixQrCode: {
+		width: 256,
+		height: 256,
+	}
 });
 
 class Bag extends React.Component {
@@ -639,7 +648,7 @@ class Bag extends React.Component {
 																	}}
 																>
 																	<option aria-label="Selecione" value={0}>Selecione</option>
-																	{this.props.pagseguro.cardInstallments.map((installment, i) => <option value={i+1} key={i+1}>{installment.quantity}x de {toBRL(installment.installmentAmount)} (total {toBRL(installment.totalAmount)})</option>)};
+																	{this.props.pagseguro.cardInstallments.map((installment, i) => <option value={i+1} key={i+1}>{installment.quantity}x de {toBRL(installment.installmentAmount)} (total {toBRL(installment.totalAmount)}{(installment.interestFree) ? ' sem juros' : ' com juros'})</option>)};
 																</Select>
 															</FormControl>
 														</Grid>
@@ -679,23 +688,26 @@ class Bag extends React.Component {
 							</Typography>
 							<Paper className={classes.orderInfoCard}>	
 									<Typography variant="body1" gutterBottom>
-										<b>Número do pedido</b>: {this.props.bag.orderInfo.order_id}<br/>
+										<b>Número do pedido</b>: #{this.props.bag.orderInfo.order_id}<br/>
 										<b>Método de pagamento:</b> {{'PIX': 'PIX', 'BOLETO': 'BOLETO', 'CREDIT': `CARTÃO DE CRÉDITO (pagamento em ${this.props.bag.orderInfo.installmentQuantity}x)`}[this.props.bag.orderInfo.payment_method]}<br/>
 										<b>Valor</b>: {toBRL(this.props.bag.orderInfo.total)}<br/>
 										<br/>
 										{(this.props.bag.orderInfo.payment_method == 'PIX') ? <React.Fragment>
-											Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br
+											Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br<br/>
+											Chave PIX: CNPJ 43.572.921/0001-31<br/>
+											Se preferir, escaneie o seguinte QR Code:<br/><br/>
+											<img src='/assets/image/bag/pix-qr-code.png' className={classes.pixQrCode}/>
 										</React.Fragment> : ''}
 										{(this.props.bag.orderInfo.payment_method == 'BOLETO') ? <React.Fragment>
 											Confirmação do pagamento em até 3 dias úteis.<br/><br/>
-											<a href={this.props.bag.orderInfo.payment_boleto_link} target='_blank'>Clique aqui para visualizar o boleto</a>
+											<Link href={this.props.bag.orderInfo.payment_boleto_link} target='_blank'>Clique aqui para visualizar o boleto</Link>
 										</React.Fragment> : ''}
 										{(this.props.bag.orderInfo.payment_method == 'CREDIT') ? <React.Fragment>
 											Confirmação do pagamento em até 2 dias úteis.<br/>
 											(geralmente é confirmado dentro de 1 hora)
 										</React.Fragment> : ''}
 										<br/><br/>
-										Você pode acompanhar o status do seu pedido em <a href='#'>Meus pedidos</a>
+										Você pode acompanhar o status do seu pedido em <Link href='/meus-pedidos' onClick={(e) => {e.preventDefault(); this.props.history.push('/meus-pedidos')}}>Meus pedidos</Link>
 									</Typography>
 							</Paper>
 							<br/>

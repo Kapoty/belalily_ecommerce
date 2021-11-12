@@ -56,6 +56,7 @@ class CustomAppBar extends React.Component {
 		this.handleCustomerMenuClose = this.handleCustomerMenuClose.bind(this);
 		this.handleCustomerLogout = this.handleCustomerLogout.bind(this);
 		this.handleCustomerProfile = this.handleCustomerProfile.bind(this);
+		this.handleCustomerOrders = this.handleCustomerOrders.bind(this);
 	}
 
 	handleMenuOpen = (event) => {
@@ -93,6 +94,11 @@ class CustomAppBar extends React.Component {
 	handleCustomerProfile() {
 		this.setState({customerMenuAnchor: null});
 		this.props.history.push('/perfil')
+	}
+
+	handleCustomerOrders() {
+		this.setState({customerMenuAnchor: null});
+		this.props.history.push('/meus-pedidos')
 	}
 
 	render() {
@@ -168,7 +174,7 @@ class CustomAppBar extends React.Component {
 								onClose={this.handleCustomerMenuClose}
 							>
 								<MenuItem onClick={this.handleCustomerProfile}>Meu Perfil</MenuItem>
-								<MenuItem onClick={this.handleCustomerMenuClose}>Meus Pedidos</MenuItem>
+								<MenuItem onClick={this.handleCustomerOrders}>Meus Pedidos</MenuItem>
 								<MenuItem onClick={this.handleCustomerLogout}>Sair</MenuItem>
 							</Menu>
 						</React.Fragment>

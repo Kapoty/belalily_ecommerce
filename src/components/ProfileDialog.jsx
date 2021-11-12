@@ -608,7 +608,7 @@ class ProfileDialog extends React.Component {
 					</Tabs>
 				</DialogTitle>
 				<DialogContent dividers ref={this.contentRef}>
-					{(customerInfoLoaded) ? <React.Fragment>
+					{(this.props.auth && customerInfoLoaded) ? <React.Fragment>
 						{(this.state.tab == 0) ? <div>
 							<form action="#" onSubmit={this.handleSubmit} autoComplete="on">
 								<Grid container spacing={1}>
@@ -1100,7 +1100,7 @@ class ProfileDialog extends React.Component {
 							</Button>
 						</React.Fragment>}
 					</React.Fragment> : ''}
-					{(!customerInfoLoaded) ? <div className={classes.progressArea}><CircularProgress color="primary"/></div> : ''}
+					{(!this.props.auth || !customerInfoLoaded) ? <div className={classes.progressArea}><CircularProgress color="primary"/></div> : ''}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={this.handleDialogClose} disabled={this.state.trying}>
