@@ -955,7 +955,7 @@ export default class MainRoute extends React.Component {
 		return <React.Fragment>
 			<ThemeProvider theme={theme}>
 				{(this.state.blockedPopup) ? <BlockedPopup blockedClick={this.blockedClick} /> : '' }
-				<CustomAppBar history={this.props.history} auth={this.state.auth} customerLogout={this.customerLogout}/>
+				<CustomAppBar history={this.props.history} auth={this.state.auth} customerLogout={this.customerLogout} customerInfo={this.state.customerInfo}/>
 				<div style={{display: (this.state.lastPage=='/') ? 'block' : 'none'}}>
 					<Catalog history={this.props.history} categories={this.state.categories} products={this.state.products} filter={this.state.filter} openFilter={this.openFilter} filtered={this.state.filter.sizes.length != 0 || this.state.filter.order != 1} />
 				</div>

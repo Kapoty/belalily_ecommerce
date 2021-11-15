@@ -26,6 +26,7 @@ import Link from '@material-ui/core/Link';
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import FaceIcon from '@material-ui/icons/Face';
 
 const useStyles = (theme) => ({
 	logo: {
@@ -103,6 +104,9 @@ class CustomAppBar extends React.Component {
 
 	render() {
 		const { classes } = this.props;
+
+		let customerInfoLoaded = !(Object.keys(this.props.customerInfo).length === 0);
+
 		return <React.Fragment>
 			<AppBar position="fixed">
 				<Toolbar>
@@ -173,6 +177,13 @@ class CustomAppBar extends React.Component {
 								open={Boolean(this.state.customerMenuAnchor)}
 								onClose={this.handleCustomerMenuClose}
 							>
+								
+								{(customerInfoLoaded) ? <List>
+									<ListItem>
+										<ListItemIcon><FaceIcon /></ListItemIcon>
+										<ListItemText primary={this.props.customerInfo.desired_name} />
+									</ListItem>
+								</List> : ''}
 								<MenuItem onClick={this.handleCustomerProfile}>Meu Perfil</MenuItem>
 								<MenuItem onClick={this.handleCustomerOrders}>Meus Pedidos</MenuItem>
 								<MenuItem onClick={this.handleCustomerLogout}>Sair</MenuItem>
