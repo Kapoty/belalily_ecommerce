@@ -312,56 +312,51 @@ class OrdersDialog extends React.Component {
 							<Typography variant="h6" gutterBottom>
 								Status do Pagamento
 							</Typography>
-							<Stepper activeStep={{'NOT_STARTED': -1, 'STARTED': 0, 'AWAITING_PAYMENT': 1, 'CONFIRMED': 2}[order.payment_status]}>
+							<Stepper activeStep={{'NOT_STARTED': 0, 'AWAITING_PAYMENT': 0, 'CONFIRMED': 1, 'CANCELED': 1}[order.payment_status]}>
 								<Step key={0}>
-									<StepLabel>Iniciado</StepLabel>
-								</Step>
-								<Step key={1}>
 									<StepLabel>Aguardando confirmação</StepLabel>
 								</Step>
-								<Step key={2}>
-									<StepLabel>Confirmado</StepLabel>
+								<Step key={1}>
+									<StepLabel>{(order.payment_status == 'CANCELED') ? 'Cancelado' : 'Confirmado'}</StepLabel>
 								</Step>
 							</Stepper>
-							{(order.payment_status == 'AWAITING_PAYMENT') ? <React.Fragment>
-								<Typography variant="h6" gutterBottom>
-									Orientações
+							<Typography variant="h6" gutterBottom>
+								Orientações
+							</Typography>
+							<Paper className={classes.guidanceCard}>
+								<Typography variant="body1" gutterBottom>
+									{(order.payment_method == 'PIX') ? <React.Fragment>
+										Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br<br/>
+										Chave PIX: CNPJ 43.572.921/0001-31<br/>
+										Se preferir, escaneie o seguinte QR Code:<br/><br/>
+										<img src='/assets/image/bag/pix-qr-code.png' className={classes.pixQrCode}/>
+									</React.Fragment> : ''}
+									{(order.payment_method == 'BOLETO') ? <React.Fragment>
+										Confirmação do pagamento em até 3 dias úteis.<br/><br/>
+										<Link href={order.payment_boleto_link} target='_blank'>Clique aqui para visualizar o boleto</Link>
+									</React.Fragment> : ''}
+									{(order.payment_method == 'CREDIT') ? <React.Fragment>
+										Confirmação do pagamento em até 2 dias úteis.<br/>
+										(geralmente é confirmado dentro de 1 hora)
+									</React.Fragment> : ''}
 								</Typography>
-								<Paper className={classes.guidanceCard}>
-									<Typography variant="body1" gutterBottom>
-										{(order.payment_method == 'PIX') ? <React.Fragment>
-											Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br<br/>
-											Chave PIX: CNPJ 43.572.921/0001-31<br/>
-											Se preferir, escaneie o seguinte QR Code:<br/><br/>
-											<img src='/assets/image/bag/pix-qr-code.png' className={classes.pixQrCode}/>
-										</React.Fragment> : ''}
-										{(order.payment_method == 'BOLETO') ? <React.Fragment>
-											Confirmação do pagamento em até 3 dias úteis.<br/><br/>
-											<Link href={order.payment_boleto_link} target='_blank'>Clique aqui para visualizar o boleto</Link>
-										</React.Fragment> : ''}
-										{(order.payment_method == 'CREDIT') ? <React.Fragment>
-											Confirmação do pagamento em até 2 dias úteis.<br/>
-											(geralmente é confirmado dentro de 1 hora)
-										</React.Fragment> : ''}
-									</Typography>
-								</Paper>
-							</React.Fragment> : ''}
+							</Paper>
 							{(order.shipping_status != 'NOT_STARTED') ? <React.Fragment>
 								<Typography variant="h6" gutterBottom>
 									Status da Entrega
 								</Typography>
-								<Stepper activeStep={{'IN_SEPARATION': 0}[order.shipping_status]}>
+								<Stepper activeStep={{'IN_SEPARATION': 0, 'READY_FOR_DELIVERY': 1, 'OUT_TO_DELIVERY': 2, 'DELIVERED': 3, 'DELIVERY_FAILURE': 4}[order.shipping_status]}>
 									<Step key={0}>
 										<StepLabel>Produtos em separação</StepLabel>
 									</Step>
 									<Step key={1}>
-										<StepLabel>Produtos separados</StepLabel>
+										<StepLabel>Pronto para a entrega</StepLabel>
 									</Step>
 									<Step key={2}>
 										<StepLabel>Saiu para a entrega</StepLabel>
 									</Step>
 									<Step key={3}>
-										<StepLabel>Entregue</StepLabel>
+										<StepLabel>{(order.shipping_status == 'DELIVERY_FAILURE') ? 'Falha na entrega' : 'Entregue'}</StepLabel>
 									</Step>
 								</Stepper>
 							</React.Fragment> : ''}
@@ -388,7 +383,7 @@ class OrdersDialog extends React.Component {
 									<Typography variant="body1" gutterBottom>
 										{{FREE: `Gratuita - até 7 dias úteis após a confirmação do pagamento`,
 										NORMAL: `Normal - ${toBRL(order.shipping_cost)} - até 2 dias úteis após a confirmação do pagamento`,
-										EXPRESS: `Expressa - ${toBRL(order.shipping_cost)} - até 1 dias úteis após a confirmação do pagamento`}[order.shipping_type]}
+										EXPRESS: `Expressa - ${toBRL(order.shipping_cost)} - até 1 dia útil após a confirmação do pagamento`}[order.shipping_type]}
 									</Typography>
 								</Paper>
 						</React.Fragment>}
