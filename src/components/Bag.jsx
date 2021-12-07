@@ -422,8 +422,8 @@ class Bag extends React.Component {
 									<FormControl component="fieldset">
 										<RadioGroup aria-label="shippingType" name="shippingType" value={this.props.bag.shippingType} onChange={(e) => this.props.setBagShippingType(e.target.value)}>
 											{(this.props.districtsById[this.props.customerInfo.district_id].shipping_free_available) ? <Paper className={classes.shippingOptionCard}><FormControlLabel value="FREE" control={<Radio />} label="Gratuita - até 7 dias úteis após a confirmação do pagamento" /></Paper> : ''}
-											<Paper className={classes.shippingOptionCard}><FormControlLabel value="NORMAL" control={<Radio />} label={`Normal - ${toBRL(this.props.districtsById[this.props.customerInfo.district_id].shipping_normal_price)} - até 2 dias úteis após a confirmação do pagamento`} /></Paper>
-											<Paper className={classes.shippingOptionCard}><FormControlLabel value="EXPRESS" control={<Radio />} label={`Expressa - ${toBRL(this.props.districtsById[this.props.customerInfo.district_id].shipping_express_price)} - até 1 dia útil após a confirmação do pagamento`} /></Paper>
+											<Paper className={classes.shippingOptionCard}><FormControlLabel value="NORMAL" control={<Radio />} label={`Normal - ${toBRL(this.props.districtsById[this.props.customerInfo.district_id].shipping_normal_price)} - até 5 dias úteis após a confirmação do pagamento`} /></Paper>
+											<Paper className={classes.shippingOptionCard}><FormControlLabel value="EXPRESS" control={<Radio />} label={`Expressa - ${toBRL(this.props.districtsById[this.props.customerInfo.district_id].shipping_express_price)} - até 3 dias úteis após a confirmação do pagamento`} /></Paper>
 										</RadioGroup>
 									</FormControl> : ''}
 								<br/>
@@ -507,7 +507,7 @@ class Bag extends React.Component {
 												à vista no PIX com até <b>5% OFF</b>
 											</Typography>
 											<Typography variant="body1" component="p" align="center" color="textPrimary" className={classes.paymentDescription}>
-												Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br
+												Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes.belalily@gmail.com <b>(obrigatório o envio do comprovante)</b>
 											</Typography>
 										</div>
 										: ''}
@@ -687,16 +687,18 @@ class Bag extends React.Component {
 									Informações
 							</Typography>
 							<Paper className={classes.orderInfoCard}>	
+									<Typography variant="h4" color="primary" component="p">
+										<b>Número do pedido</b>: #{this.props.bag.orderInfo.order_id}
+									</Typography>
 									<Typography variant="body1" gutterBottom>
-										<b>Número do pedido</b>: #{this.props.bag.orderInfo.order_id}<br/>
 										<b>Método de pagamento:</b> {{'PIX': 'PIX', 'BOLETO': 'BOLETO', 'CREDIT': `CARTÃO DE CRÉDITO (pagamento em ${this.props.bag.orderInfo.installmentQuantity}x)`}[this.props.bag.orderInfo.payment_method]}<br/>
 										<b>Valor</b>: {toBRL(this.props.bag.orderInfo.total)}<br/>
 										<br/>
 										{(this.props.bag.orderInfo.payment_method == 'PIX') ? <React.Fragment>
-											Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br<br/>
+											Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes.belalily@gmail.com <b>(obrigatório o envio do comprovante)</b><br/>
 											Chave PIX: CNPJ 43.572.921/0001-31<br/>
 											Se preferir, escaneie o seguinte QR Code:<br/><br/>
-											<img src='/assets/image/bag/pix-qr-code.png' className={classes.pixQrCode}/>
+											<img src='/assets/image/bag/qr-code-pix.png' className={classes.pixQrCode}/>
 										</React.Fragment> : ''}
 										{(this.props.bag.orderInfo.payment_method == 'BOLETO') ? <React.Fragment>
 											Confirmação do pagamento em até 3 dias úteis.<br/><br/>

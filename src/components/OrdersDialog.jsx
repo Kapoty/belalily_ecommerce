@@ -326,10 +326,10 @@ class OrdersDialog extends React.Component {
 							<Paper className={classes.guidanceCard}>
 								<Typography variant="body1" gutterBottom>
 									{(order.payment_method == 'PIX') ? <React.Fragment>
-										Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes@belalily.com.br<br/>
+										Confirmação do pagamento em até 1 dia útil após envio do comprovante para o email comprovantes.belalily@gmail.com <b>(obrigatório o envio do comprovante)</b><br/>
 										Chave PIX: CNPJ 43.572.921/0001-31<br/>
 										Se preferir, escaneie o seguinte QR Code:<br/><br/>
-										<img src='/assets/image/bag/pix-qr-code.png' className={classes.pixQrCode}/>
+										<img src='/assets/image/bag/qr-code-pix.png' className={classes.pixQrCode}/>
 									</React.Fragment> : ''}
 									{(order.payment_method == 'BOLETO') ? <React.Fragment>
 										Confirmação do pagamento em até 3 dias úteis.<br/><br/>
@@ -382,8 +382,8 @@ class OrdersDialog extends React.Component {
 								<Paper className={classes.shippingOptionCard}>
 									<Typography variant="body1" gutterBottom>
 										{{FREE: `Gratuita - até 7 dias úteis após a confirmação do pagamento`,
-										NORMAL: `Normal - ${toBRL(order.shipping_cost)} - até 2 dias úteis após a confirmação do pagamento`,
-										EXPRESS: `Expressa - ${toBRL(order.shipping_cost)} - até 1 dia útil após a confirmação do pagamento`}[order.shipping_type]}
+										NORMAL: `Normal - ${toBRL(order.shipping_cost)} - até 5 dias úteis após a confirmação do pagamento`,
+										EXPRESS: `Expressa - ${toBRL(order.shipping_cost)} - até 3 dias úteis após a confirmação do pagamento`}[order.shipping_type]}
 									</Typography>
 								</Paper>
 						</React.Fragment>}

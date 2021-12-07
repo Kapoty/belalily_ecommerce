@@ -32,7 +32,7 @@ class InternalPage extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.pages = [{pathname: 'entrega-gratis', name: 'Entrega Grátis', component: FreeShipping},
+		this.pages = [/*{pathname: 'entrega-gratis', name: 'Entrega Grátis', component: FreeShipping},*/
 					{pathname: 'perguntas-frequentes', name: 'Perguntas Frequentes', component: FAQ},
 					{pathname: 'troca-devolucao', name: 'Troca/Devolução', component: ReturnPolicy},
 					{pathname: 'quem-somos', name: 'Quem Somos', component: AboutUs},

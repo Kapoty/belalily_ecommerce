@@ -27,8 +27,16 @@ import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import FaceIcon from '@material-ui/icons/Face';
+import MailIcon from '@material-ui/icons/Mail';
 
 const useStyles = (theme) => ({
+	logoArea: {
+		width: '100%',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: theme.palette.primary.main,
+	},
 	logo: {
 		position: 'absolute',
 		left: '50%',
@@ -115,12 +123,12 @@ class CustomAppBar extends React.Component {
 					</IconButton>
 					<img className={classes.logoImg} src='./assets/image/logo-small.png' onClick={() => this.props.history.push('/')}/>
 					<Drawer anchor={'left'} open={Boolean(this.state.menuAnchor)} onClose={this.handleMenuClose}>
-						<Link href="#/" onClick={() => this.props.history.push("")}><img src='./assets/image/logo-256.png'/></Link>
+						<div className={classes.logoArea}><Link href="#/" onClick={() => this.props.history.push("")}><img src='./assets/image/logo-256.png'/></Link></div>
 						<List>
-							<ListItem button key={0} onClick={() => this.handleMenuClick('/entrega-gratis')}>
+							{/*<ListItem button key={0} onClick={() => this.handleMenuClick('/entrega-gratis')}>
 								<ListItemIcon><LocalShippingIcon /></ListItemIcon>
 								<ListItemText primary={"Entrega Grátis"} />
-							</ListItem>
+							</ListItem>*/}
 							<ListItem button key={1} onClick={() => this.handleMenuClick('/troca-devolucao')}>
 								<ListItemIcon><AssignmentReturnIcon /></ListItemIcon>
 								<ListItemText primary={"Troca/Devolução"} />
@@ -151,6 +159,10 @@ class CustomAppBar extends React.Component {
 							<ListItem button key={6} onClick={this.openWhatsapp}>
 								<ListItemIcon><WhatsappIcon /></ListItemIcon>
 								<ListItemText primary={"(62) 9 8311-8355"} />
+							</ListItem>
+							<ListItem button key={6} onClick={() => window.open('mailto:mailto:atendimento.belalily@gmail.com')}>
+								<ListItemIcon><MailIcon /></ListItemIcon>
+								<ListItemText primary={"atendimento.belalily@gmail.com"} />
 							</ListItem>
 							<Divider/>
 							<Typography className={classes.cnpj} align="center" variant="subtitle2">CNPJ 43.572.921/0001-31</Typography>

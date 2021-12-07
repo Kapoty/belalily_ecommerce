@@ -55,7 +55,7 @@ export default class MainRoute extends React.Component {
 
 		this.state = {lastPage: '/', 
 			cookiesDialogOpened: cookies.get('cookiesDialog') == undefined,
-			blockedPopup: false, blockedPopupPass: '03213', blockedPopupPassTry: '',
+			blockedPopup: true, blockedPopupPass: '03213', blockedPopupPassTry: '',
 			categories: [],
 			products: [],
 			sizes: {}, sizesById: {},
