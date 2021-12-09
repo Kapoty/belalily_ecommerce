@@ -659,6 +659,9 @@ export default class MainRoute extends React.Component {
 						case 'coupon maximum units exceeded':
 							this.state.bag.orderErrorMessage = `Unidades na sacola excede o limite de ${data.preOrder.coupon.max_units} unidades`;
 						break;
+						case 'coupon already used':
+							this.state.bag.orderErrorMessage = `Cupom já utilizado`;
+						break;
 					}
 					this.state.bag.preOrder = data.preOrder;
 					if (this.state.pagseguro.sessionId != '' && this.state.pagseguro.cardBrand != '') {
