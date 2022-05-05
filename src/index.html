@@ -12,14 +12,14 @@
 	<meta property="og:description" content="Somos a Bela Lily! Viemos ao mercado da moda para trazer à vocês os melhores produtos disponíveis e com o melhor preço possível.">
 	<meta property="og:title" content="Bela Lily">
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<!--<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z904P80Y7M"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z904P80Y7M"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 
 	  gtag('config', 'G-Z904P80Y7M');
-	</script>-->
+	</script>
   </head>
   <body>
     <div id="root"></div>
@@ -40,8 +40,8 @@
     </div>
     <script type="text/javascript">
       window.onerror = function (message, url, lineNo) {
-      		//localStorage.clear();
-          document.getElementById("root").style.display = 'none';
+      		localStorage.clear();
+          	document.getElementById("root").style.display = 'none';
       		document.getElementById("onError").style.display = 'flex';
       		document.querySelector("#onError .errorMessage").value = 'Error: ' + message + '\n' + 'Line Number: ' + lineNo;
           //alert('Error: ' + message + '\n' + 'Line Number: ' + lineNo);

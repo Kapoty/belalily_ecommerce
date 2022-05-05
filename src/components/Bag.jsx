@@ -206,7 +206,7 @@ class Bag extends React.Component {
 				if (!this.state.creatingCardToken && this.props.pagseguro.cardToken == '') {
 					this.setState({creatingCardToken: true});
 					PagSeguroDirectPayment.createCardToken({
-						cardNumber: this.state.cardNumber, // Número do cartão de crédito
+						cardNumber: this.state.cardNumber.replace(/[^0-9]/g, ''), // Número do cartão de crédito
 						brand: this.props.pagseguro.cardBrand, // Bandeira do cartão
 						cvv: this.state.cardCvv, // CVV do cartão
 						expirationMonth: this.state.cardExpirationMonth, // Mês da expiração do cartão

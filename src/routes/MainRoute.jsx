@@ -55,7 +55,7 @@ export default class MainRoute extends React.Component {
 
 		this.state = {lastPage: '/', 
 			cookiesDialogOpened: cookies.get('cookiesDialog') == undefined,
-			blockedPopup: true, blockedPopupPass: '03213', blockedPopupPassTry: '',
+			blockedPopup: false, blockedPopupPass: '03213', blockedPopupPassTry: '',
 			categories: [],
 			products: [],
 			sizes: {}, sizesById: {},
@@ -837,7 +837,8 @@ export default class MainRoute extends React.Component {
 		const script = document.createElement("script");
 		script.setAttribute("id", "pagseguro-script");
 		script.async = true;
-		script.src = "	https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js";
+		//script.src = "	https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js";
+		script.src = "	https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js";
 		script.onload = () => {
 			this.setState({pagseguro: {...this.state.pagseguro, scriptLoaded: true}});
 			PagSeguroDirectPayment.onSenderHashReady(this.onPagseguroSenderHashReady);

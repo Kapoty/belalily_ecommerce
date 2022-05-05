@@ -533,7 +533,7 @@ class ProfileDialog extends React.Component {
 					errorInput: '',
 					name: this.props.customerInfo.name,
 					desired_name: this.props.customerInfo.desired_name,
-					birthday: this.props.customerInfo.birthday,
+					birthday: this.props.customerInfo.birthday.replace("T00:00:00.000Z", "T04:00:00.000Z"),
 					mobile: this.props.customerInfo.mobile,
 					whatsapp: this.props.customerInfo.whatsapp,
 				});
@@ -674,7 +674,7 @@ class ProfileDialog extends React.Component {
 											fullWidth
 											margin="normal"
 											label="Data de Nascimento"
-											value={(!this.state.editing) ? this.props.customerInfo.birthday : this.state.birthday}
+											value={(!this.state.editing) ? this.props.customerInfo.birthday.replace("T00:00:00.000Z", "T04:00:00.000Z") : this.state.birthday}
 											placeholder="10/10/2018"
 											onChange={(e) => this.setState({birthday: e})}
 											minDate={new Date(1900, 1, 1)}
