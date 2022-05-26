@@ -8,6 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 import Config from "../config/Config";
 import {toBRL} from '../util/Currency';
@@ -30,6 +31,9 @@ const useStyles = (theme) => ({
 			height: '250px',
 		},
 	},
+	alert: {
+		marginTop: theme.spacing(1),
+	}
 });
 
 class Product extends React.Component {
@@ -59,7 +63,11 @@ class Product extends React.Component {
 						<Typography variant="subtitle2" component="p" align="center" color="textSecondary">
 							à vista no PIX
 						</Typography>
-						
+						{	(this.props.product.available == 0) ?
+							<Alert severity="error" className={classes.alert}>
+								<AlertTitle align="center">Esgotado</AlertTitle>
+							</Alert> : ''
+						}
 					</CardContent>
 				</CardActionArea>
 			</Card>

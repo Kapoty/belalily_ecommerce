@@ -466,7 +466,7 @@ class Bag extends React.Component {
 													helperText={(this.state.errorInput == 'coupon') ? '' : ''}
 													InputProps={{
 														inputProps: {
-															maxLength: 10
+															maxLength: 20
 														}
 													}}
 												/>
