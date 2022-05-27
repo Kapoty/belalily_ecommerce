@@ -54,3 +54,38 @@ body {
 	line-height: 40px;
 	text-decoration: none; /* no underline */
 }
+
+#loading {
+	display: flex;
+	position: fixed;
+	background-color: #f26389;
+	width: 100vw;
+	min-height: 100vh;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+}
+
+#loading .bar {
+	width: 256px;
+	height: 10px;
+	background-color: white;
+	padding: 2px;
+	border-radius: 10px;
+	box-sizing: border-box;
+}
+
+#loading .bar .progress {
+	height: 6px;
+	background-color: #f26389;
+	border-radius: 10px;
+	width: 0px;
+}
+
+.loadingFade {
+	opacity: 0;
+	transition: opacity 0.5s;
+}

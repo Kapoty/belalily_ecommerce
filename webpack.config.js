@@ -44,7 +44,8 @@ module.exports = {
             "hash": true,
             "chunks": ["app"],
             "path": __dirname+'/static',
-            "filename": 'index.html' //relative to root of the application
+            "filename": 'index.html', //relative to root of the application
+            "inject": false,
         }),
         new CopyPlugin([{
         		"from": "src/assets",
